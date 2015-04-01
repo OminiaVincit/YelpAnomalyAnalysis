@@ -41,7 +41,8 @@ def bs_worker(identifier, skip, count):
     businesses_collection = Businesses().collection
     batch_size = 1000
     for batch in range(0, count, batch_size):
-        items_cursor = businesses_collection.find().skip(skip+batch).limit(batch_size)
+        lm_size = min(batch_size, count-batch)
+        items_cursor = businesses_collection.find().skip(skip+batch).limit(lm_size)
         for item in items_cursor:
             item_id = item['id']
             tmp_dict = {}
@@ -69,7 +70,8 @@ def us_worker(identifier, skip, count):
     users_collection = Users().collection
     batch_size = 1000
     for batch in range(0, count, batch_size):
-        items_cursor = users_collection.find().skip(skip + batch).limit(batch_size)
+        lm_size = min(batch_size, count-batch)
+        items_cursor = users_collection.find().skip(skip + batch).limit(lm_size)
         for item in items_cursor:
             item_id = item['id']
             tmp_dict = {}

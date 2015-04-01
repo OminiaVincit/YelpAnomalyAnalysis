@@ -33,7 +33,8 @@ def worker(identifier, collection, skip, count):
 
     batch_size = 500
     for batch in range(0, count, batch_size):
-        items_cursor = items_collection.find().skip(skip + batch).limit(batch_size)
+        lm_size = min(batch_size, count-batch)
+        items_cursor = items_collection.find().skip(skip + batch).limit(lm_size)
         counter = skip + batch + 1
         for item in items_cursor:
             items_collection.update({'_id' : item['_id']}, {'$set' : {'id':counter}}, False, True)
@@ -53,7 +54,8 @@ def review_worker(identifier, skip, count):
     reviews_collection = Reviews().collection
     batch_size = 1000
     for batch in range(0, count, batch_size):
-        reviews_cursor = reviews_collection.find().skip(skip + batch).limit(batch_size)
+        lm_size = min(batch_size, count-batch)
+        reviews_cursor = reviews_collection.find().skip(skip + batch).limit(lm_size)
         counter = skip + batch + 1
         for review in reviews_cursor:
             p_business_id = bs_dict[str(review['business_id'])]

@@ -13,8 +13,12 @@ class Settings:
     REVIEWS_COLLECTION = 'reviews'
     BUSINESSES_COLLECTION = 'businesses'
     USERS_COLLECTION = 'users'
+    TAGS_COLLECTION = 'res_tags'
+    CORPUS_COLLECTION = 'res_corpus'
 
     RES_BUSINESSES_COLLECTION = 'res_businesses'
     RES_REVIEWS_COLLECTION = 'res_reviews'
     RES_USERS_COLLECTION = 'res_users'
+    RES_TAGS_COLLECTION = 'res_tags'
+    RES_CORPUS_COLLECTION = 'res_corpus'
     

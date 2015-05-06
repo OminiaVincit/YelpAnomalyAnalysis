@@ -7,7 +7,7 @@ import json
 import time
 import sys
 import nltk
-# from nltk.tag.stanford import POSTagger
+#from nltk.tag.stanford import POSTagger
 import multiprocessing
 
 from settings import Settings
@@ -28,8 +28,8 @@ def extract_tags(identifier, skip, count):
     start = time.time()
     stopwords = load_stopwords()
     filename = 'res_tags_' + str(identifier) + '.json'
-    english_postagger = POSTagger('./postagger/models/wsj-0-18-left3words-distsim.tagger', \
-        './postagger/stanford-postagger.jar')
+    #english_postagger = POSTagger('./postagger/models/wsj-0-18-left3words-distsim.tagger', \
+    #    './postagger/stanford-postagger.jar')
     rvs = Reviews(collection_name=Settings.RES_REVIEWS_COLLECTION)
     batch_size = 50
 
@@ -45,8 +45,8 @@ def extract_tags(identifier, skip, count):
                     tokens = nltk.word_tokenize(sentence)
                     # text = [word for word in tokens if word not in stopwords]
                     # text = [word.encode('utf-8') for word in tokens]
-                    # tagged_text = nltk.pos_tag(tokens)
-                    tagged_text = english_postagger.tag(tokens)
+                    tagged_text = nltk.pos_tag(tokens)
+                    #tagged_text = english_postagger.tag(tokens)
                     for word, tag in tagged_text:
                         if word not in stopwords:
                             words.append({'word': word, 'pos': tag})

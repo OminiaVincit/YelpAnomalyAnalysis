@@ -15,7 +15,7 @@ def display():
     #dictionary_path = 'models/dictionary.dict'
     #corpus_path = 'models/corpus.lda-c'
     lda_num_topics = 50
-    lda_model_path = 'models/lda_model_50_topics.lda'
+    lda_model_path = '../models/lda_model_50_topics.lda'
 
     #dictionary = corpora.Dictionary.load(dictionary_path)
     #corpus = corpora.BleiCorpus(corpus_path)

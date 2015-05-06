@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+*.pyc
+R_scripts/Data/*.*
+R_scripts/.DS_Store
+R_scripts/.Rhistory
+R_scripts/.RData

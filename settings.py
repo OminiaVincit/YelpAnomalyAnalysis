@@ -21,4 +21,7 @@ class Settings:
     RES_USERS_COLLECTION = 'res_users'
     RES_TAGS_COLLECTION = 'res_tags'
     RES_CORPUS_COLLECTION = 'res_corpus'
+
+    INPUT_COLLECTION = 'res_tags_topics'
+    FEATURES_COLLECTION = 'res_tags_topics_votes_nonzero'
     

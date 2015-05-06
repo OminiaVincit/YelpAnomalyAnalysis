@@ -110,9 +110,13 @@ def _test():
         'featured a very friendly staff, great prices, and tasty food.  '\
         'I am pleased and will definitely come back again.'
 
-    new_review3 = 'Father book'
+    new_review3 = 'Sashimi here is wonderful and melt in your mouth.' \
+        'I often get the sashimi tasting here.'\
+        'I do not think the rolls here are that great.'\
+        'I think the udon noodle sets and other items on the menu are very good but it changes from time to time.'\
+        'If you have a group over 4 then this may not be a place for you. Agashi tofu was great here.'
     predict = Predict()
-    topics = predict.run(str(new_review2).decode('utf-8'))
+    topics = predict.run(str(new_review3).decode('utf-8'))
     print topics
 
     top_dict = {x:0 for x in range(NUMTOPICS)}
@@ -261,5 +265,5 @@ def main():
         print '%s.exitcode = %s' % (j.name, j.exitcode)
 
 if __name__ == '__main__':
-    main()
-    #_test()
+    #main()
+    _test()

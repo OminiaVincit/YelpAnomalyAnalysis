@@ -100,7 +100,8 @@ def make_from_webmovies(infile, outfile):
                         if tag == 'score':
                             review['rating'] = float(line[(ed+1):])
                 else:
-                    if len(review) > 0:
+                    if review.get('item_id') and review.get('user_id') and review.get('text') \
+                    and review.get('votes') and review.get('rating') and review.get('helpful'):
                         review['review_id'] = str(uuid.uuid4())
                         # Print review
                         try:

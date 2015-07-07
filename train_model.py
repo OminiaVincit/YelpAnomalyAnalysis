@@ -88,9 +88,23 @@ def test():
 
 def display():
     u'''Display hidden topics'''
-    lda_model_path = 'models/lda_model_50_topics_movies_corpus.lda'
+    lda_model_path = '../Dataset/models/lda_model_50_topics_movies_corpus.lda'
     lda1 = LdaModel.load(lda_model_path)
-    print lda1.show_topics(num_topics=50, num_words=10, log=False, formatted=True)
+    top_list = lda1.show_topics(num_topics=50, num_words=10, log=False, formatted=True)
+    index = 0
+    for top in top_list:
+        index += 1
+        print index,
+        #scores = []
+        #words = []
+        topwords = top.split(' + ')
+        for topword in topwords:
+            member = topword.split('*')
+            print member[1],
+            #words.append(member[1])
+            #scores.append(member[0])
+        print ''
+        
 
 if __name__ == '__main__':
 #    make_model(Settings.MOVIES_CORPUS_COLLECTION)

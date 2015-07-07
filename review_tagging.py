@@ -11,23 +11,17 @@ import nltk
 import multiprocessing
 
 from settings import Settings
-from data_utils import Reviews
-
-def load_stopwords():
-    u'''Load stop words'''
-    stopwords = {}
-    with open('stopwords.txt', 'rU') as _file:
-        for line in _file:
-            stopwords[line.strip()] = 1
-    return stopwords
+from data_utils import Reviews, load_stopwords
 
 def extract_tags_job(collection_name, identifier, skip, count):
     u'''Extract tags'''
+    idx = collection_name.find('_')
+    name = collection_name[0:idx]
     # Debug time
     done = 0
     start = time.time()
     stopwords = load_stopwords()
-    filename = 'res_tags_' + str(identifier) + '.json'
+    filename = name + '_tags_' + str(identifier) + '.json'
     #english_postagger = POSTagger('./postagger/models/wsj-0-18-left3words-distsim.tagger', \
     #    './postagger/stanford-postagger.jar')
     rvs = Reviews(collection_name=collection_name)

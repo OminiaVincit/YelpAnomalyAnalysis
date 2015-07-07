@@ -7,6 +7,14 @@
 from pymongo import MongoClient
 from settings import Settings
 
+def load_stopwords():
+    u'''Load stop words'''
+    stopwords = {}
+    with open('stopwords.txt', 'rU') as _file:
+        for line in _file:
+            stopwords[line.strip()] = 1
+    return stopwords
+
 class GenCollection(object):
     u'''Holds a general collection'''
     

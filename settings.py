@@ -10,6 +10,7 @@ class Settings:
     DATASET_FILE = ''
     MONGO_CONNECTION_STRING = 'mongodb://localhost:27017'
     DATABASE = 'predict'
+    
     YELP_REVIEWS_COLLECTION = 'yelp_reviews'
     TRIPADVISOR_REVIEWS_COLLECTION = 'tripadvisor_reviews'
     MOVIES_REVIEWS_COLLECTION = 'movies_reviews'
@@ -21,3 +22,6 @@ class Settings:
     YELP_CORPUS_COLLECTION = 'yelp_corpus'
     TRIPADVISOR_CORPUS_COLLECTION = 'tripadvisor_corpus'
     MOVIES_CORPUS_COLLECTION = 'movies_corpus'
+    
+    NUMTOPICS = 50
+    EPSILON = 1e-7

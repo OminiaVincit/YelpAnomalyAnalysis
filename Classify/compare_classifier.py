@@ -61,7 +61,7 @@ if __name__ == '__main__':
                         'LogisticRegression',
                         #'SVC',
                         #'SVC_linear',
-                        'OneVsOneClassifier_LinearSVC',
+                        'OneVsRestClassifier_LinearSVC',
                         'OneVsOneClassifier_LinearSVC'
                       ])
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     'LogisticRegression',
     #'SVC',
     #'SVC_linear',
-    'OneVsOneClassifier_LinearSVC',
+    'OneVsRestClassifier_LinearSVC',
     'OneVsOneClassifier_LinearSVC'
   ]
 

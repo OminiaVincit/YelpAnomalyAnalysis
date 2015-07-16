@@ -15,15 +15,14 @@ makeTest <- function(srcdat, cross_r, test_r){
 }
 
 # Preprocessing for data
-transform <- function(X, f_means, f_sds){
-  nc = ncol(X)
-  for (i in 1:nc){
+transform <- function(X, activeCols, f_means, f_sds){
+  for (i in activeCols){
     X[, i] <- (X[, i] - f_means[i])/f_sds[i]
   }
   return (X)
 }
 
-dataPrep <- function(mydata, exclude){
+dataPrep <- function(mydata, activeCols){
   training = subset(mydata, Case=='Train')
   training$Case = NULL
 
@@ -36,18 +35,13 @@ dataPrep <- function(mydata, exclude){
   f_sds = apply(training, 2, sd)
   f_means = apply(training, 2, mean)
   
-  for (exc in exclude){
-    f_sds[exc] = 1
-    f_means[exc] = 0
-  }
-  
-  training = transform(training, f_means, f_sds)
+  training = transform(training, activeCols, f_means, f_sds)
   
   if (nrow(testing) > 0){
-    testing = transform(testing, f_means, f_sds)
+    testing = transform(testing, activeCols, f_means, f_sds)
   }
   if (nrow(crossing) > 0){
-    crossing = transform(crossing, f_means, f_sds)
+    crossing = transform(crossing, activeCols, f_means, f_sds)
   }
   
   newlist = list('training' = training, 'crossing' = crossing, 'testing' = testing)
@@ -90,8 +84,8 @@ glmGauss <- function(X, features_col, target_cl){
   ynam = paste("X$V", target_cl, sep="")
   fmla = as.formula(paste(ynam, " ~ ", paste(xnam, collapse= "+")))
   glm_fit = glm(fmla, data=X, family=gaussian)
-  #return (coefficients(glm_fit))
-  return (glm_fit)
+  return (coefficients(glm_fit))
+  #return (glm_fit)
 }
 
 glmBinom <- function(X, features_col, target_cl, weights_cl){
@@ -109,8 +103,8 @@ glmBinom <- function(X, features_col, target_cl, weights_cl){
   
   glm_fit = glm(fmla, weights=X[, weights_cl], data=X, family=binomial(link=logit))
   #glm_fit = glm(fmla, data=X, family=binomial(link=logit))
-  #return (coefficients(glm_fit))
-  return (glm_fit)
+  return (coefficients(glm_fit))
+  #return (glm_fit)
 }
 
 glmPoisson <- function(X, features_col, target_cl){
@@ -126,8 +120,10 @@ compute_RMSE <- function(X, features_col, coeff, target_cl, type='lm'){
   # The index of target column
   target = X[, target_cl]
   predicted = coeff[1] + rep(0, length(target))
+  j <- 1
   for (i in features_col){
-    predicted = predicted + X[, i] * coeff[i+1]
+    predicted = predicted + X[, i] * coeff[j+1]
+    j <- j + 1
   }
   if (type=='glm'){
     predicted = 1.0 - 1.0 / (1.0 + exp(predicted))
@@ -146,30 +142,30 @@ baseline_RMSE <- function(cl_tr, cl_ts){
   return (rmse)
 }
 
-dat <- read.table('../features_votes_10_text_only.txt', sep = ' ', header = F)
-mydata = dat[sample(nrow(dat)), ]
-weights_cl = ncol(mydata)# The last column is weights column
-target_cl = weights_cl - 1
-mydata = makeTest(mydata, 0, 0)
-data_ls = dataPrep(mydata, c(target_cl, weights_cl))
-X_tr = data_ls$training
-# X_ts = data_ls$testing
+# dat <- read.table('../features_votes_10_text_only.txt', sep = ' ', header = F)
+# mydata = dat[sample(nrow(dat)), ]
+# weights_cl = ncol(mydata)# The last column is weights column
+# target_cl = weights_cl - 1
+# mydata = makeTest(mydata, 0, 0)
+# data_ls = dataPrep(mydata, c(target_cl, weights_cl))
+# X_tr = data_ls$training
+# # X_ts = data_ls$testing
+# # 
+# features_col = 1:(target_cl-1)
+# #lm_fit = linearModel(X_tr, features_col, target_cl)
+# glm_fit = glmBinom(X_tr, features_col, target_cl, weights_cl)
+# #glm_res[i] = AIC(glm_fit, k=log(length(X_tr[,1])))
+# #layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+# #plot(glm_fit)
+# df1 <- data.frame(fitted = fitted(glm_fit), votes=X_tr[, weights_cl], residuals=residuals(glm_fit, type='pearson') )
 # 
-features_col = 1:(target_cl-1)
-#lm_fit = linearModel(X_tr, features_col, target_cl)
-glm_fit = glmBinom(X_tr, features_col, target_cl, weights_cl)
-#glm_res[i] = AIC(glm_fit, k=log(length(X_tr[,1])))
-#layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
-#plot(glm_fit)
-df1 <- data.frame(fitted = fitted(glm_fit), votes=X_tr[, weights_cl], residuals=residuals(glm_fit, type='pearson') )
-
-g1 <- ggplot(df1, aes(x = fitted, y = votes))
-g1 <- g1 + geom_point(color = 'red')
-g1 <- g1 + labs(x = 'Fitted values', y = 'Number of votes')
-
-g2 <- ggplot(df1, aes(x = fitted, y = residuals))
-g2 <- g2 + geom_point(color = 'blue')
-g2 <- g2 + labs(x = 'Fitted values', y = 'Residuals')
-
-multiplot(g1, g2, cols = 1)
+# g1 <- ggplot(df1, aes(x = fitted, y = votes))
+# g1 <- g1 + geom_point(color = 'red')
+# g1 <- g1 + labs(x = 'Fitted values', y = 'Number of votes')
+# 
+# g2 <- ggplot(df1, aes(x = fitted, y = residuals))
+# g2 <- g2 + geom_point(color = 'blue')
+# g2 <- g2 + labs(x = 'Fitted values', y = 'Residuals')
+# 
+# multiplot(g1, g2, cols = 1)
 

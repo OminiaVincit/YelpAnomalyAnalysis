@@ -14,7 +14,7 @@ from sklearn.cross_validation import train_test_split
 # For evaluation
 from sklearn.metrics import roc_auc_score
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 BASE_DIR = r'../../Dataset/Features'
 RESULT_DIR = r'../Results'

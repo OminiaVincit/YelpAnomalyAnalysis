@@ -27,7 +27,7 @@ def make_data(filename, usecols=None):
   ds = Dataset()
   data = np.loadtxt(filename, dtype='float', delimiter=' ', usecols=usecols)
   (nr, nc) = data.shape
-  ds.target = np.zeros(nr)
+  ds.target = np.zeros(nr).astype(np.uint8)
   for i in range(nr):
     # Check label
     # quality [0.8, 1] -> label 1, [0.6, 0.8) -> label 2
@@ -57,3 +57,22 @@ def create_result_dir(args):
       filename=log_fn, level=logging.DEBUG)
   logging.info(args)
   return log_fn, result_dir
+
+def get_all_class_names():
+  """
+  Get all class name
+  """
+  all_cl = ['Terrible', 'Bad', 'Normal',  'Good', 'Excellent']
+  return all_cl
+
+def get_class_names_for_class_indices(indices):
+  """
+  Convert from numeric value to label name
+  """
+  all_cl = get_all_class_names()
+  class_names = []
+  for i in range(len(indices)):
+    assert(indices[i] >= 0 and indices[i] < len(all_cl))
+    class_names.append(all_cl[indices[i]])
+  return class_names
+

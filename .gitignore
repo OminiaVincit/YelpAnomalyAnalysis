@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 *.pyc
+Results/*.*
 R_scripts/Data/*.*
 R_scripts/.DS_Store
 R_scripts/.Rhistory

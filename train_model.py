@@ -88,9 +88,9 @@ def test():
 
 def display():
     u'''Display hidden topics'''
-    lda_model_path = '../Dataset/models/lda_model_50_topics_movies_corpus.lda'
+    lda_model_path = '../Dataset/models/lda_model_50_topics_tripadvisor_corpus.lda'
     lda1 = LdaModel.load(lda_model_path)
-    top_list = lda1.show_topics(num_topics=50, num_words=10, log=False, formatted=True)
+    top_list = lda1.show_topics(num_topics=50, num_words=20, log=False, formatted=True)
     index = 0
     for top in top_list:
         index += 1
@@ -107,7 +107,7 @@ def display():
         
 
 if __name__ == '__main__':
-#    make_model(Settings.MOVIES_CORPUS_COLLECTION)
+    #make_model(Settings.TRIPADVISOR_CORPUS_COLLECTION)
     display()
 
 

@@ -43,7 +43,7 @@ if __name__ == '__main__':
   parser.add_argument('--result_dir', type=str, default=RESULT_DIR)
   parser.add_argument('--features', type=str, default='all',
                       choices=['text_only', 'topics_only', 'text_topics', 'all'])
-  parser.add_argument('--num_test', type=int, default=10)
+  parser.add_argument('--num_test', type=int, default=20)
   parser.add_argument('--classifier', type=str, default='all',
                       choices= [
                         'all',
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     classifiers.append(clf)
     names.append(args.classifiers)
 
-  num_test = 10
+  num_test = 20
   if args.num_test:
     num_test = args.num_test
 
@@ -145,12 +145,15 @@ if __name__ == '__main__':
       # Choosing active column
       usecols = None
       if design == 'text_only':
-        flist = range(15)
+        flist = range(13)
         flist.append(65)
-        usecols = tuple(flist)
       elif design == 'topics_only':
-        flist = range(15, 66)
-        usecols = tuple(flist)
+        flist = range(13, 63)
+	flist.append(65)
+      else:
+	flist = range(63)
+	flist.append(65)
+      usecols = tuple(flist)
 
       # Make training and testing data
       ds = make_data(filename, usecols)

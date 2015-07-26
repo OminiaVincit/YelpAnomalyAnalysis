@@ -16,7 +16,7 @@ from transform import Transform
 import pickle
 #from draw_loss import draw_loss_curve
 from progressbar import ProgressBar
-from multiprocessing import Process, Queue
+#from multiprocessing import Process, Queue
 
 def create_result_dir(args):
   u'''Create log file'''
@@ -86,37 +86,39 @@ def augmentation(x_batch_queue, aug_x_queue, trans):
 
 def train(train_data, train_labels, N, model, optimizer, args, trans):
   u'''For training'''
-  # for parallel augmentation
-  x_batch_queue = Queue()
-  aug_x_queue = Queue()
-  aug_worker = Process(target=augmentation,
-                       args=(x_batch_queue, aug_x_queue, trans))
-  aug_worker.start()
+  # # for parallel augmentation
+  # x_batch_queue = Queue()
+  # aug_x_queue = Queue()
+  # aug_worker = Process(target=augmentation,
+  #                      args=(x_batch_queue, aug_x_queue, trans))
+  # aug_worker.start()
 
   # training
   pbar = ProgressBar(N)
   perm = np.random.permutation(N)
   sum_accuracy = 0
   sum_loss = 0
-  for i in range(0, N, args.batchsize):
-      x_batch = train_data[perm[i:i + args.batchsize]]
+  # for i in range(0, N, args.batchsize):
+  #     x_batch = train_data[perm[i:i + args.batchsize]]
 
-      # data augmentation
-      x_batch_queue.put(x_batch)
+  #     # data augmentation
+  #     x_batch_queue.put(x_batch)
 
   for i in range(0, N, args.batchsize):
-    # x_batch = train_data[perm[i:i + args.batchsize]]
+    x_batch = train_data[perm[i:i + args.batchsize]]
     y_batch = train_labels[perm[i:i + args.batchsize]]
     
-    # if args.norm == 1:
-    #   x_batch = np.asarray(map(global_contrast_norm, x_batch))
-    aug_x = aug_x_queue.get()
+    if args.norm == 1:
+      x_batch = np.asarray(map(global_contrast_norm, x_batch))
+    # aug_x = aug_x_queue.get()
 
-    if args.gpu >= 0:
-      x_batch = cuda.to_gpu(aug_x.astype(np.float32))
-      y_batch = cuda.to_gpu(y_batch.astype(np.int32))
-    else:
-      x_batch = aug_x
+    # if args.gpu >= 0:
+    #   x_batch = cuda.to_gpu(aug_x.astype(np.float32))
+    #   y_batch = cuda.to_gpu(y_batch.astype(np.int32))
+    # else:
+    #   x_batch = aug_x.astype(np.float32)
+    #   y_batch = aug_x.astype(np.int32)
+
     optimizer.zero_grads()
     loss, acc = model.forward(x_batch, y_batch, train=True)
     loss.backward()
@@ -133,8 +135,8 @@ def train(train_data, train_labels, N, model, optimizer, args, trans):
 
     pbar.update(i + args.batchsize if (i + args.batchsize) < N else N)
 
-  x_batch_queue.put(None)
-  aug_worker.join()
+  # x_batch_queue.put(None)
+  # aug_worker.join()
 
   return sum_loss, sum_accuracy
 
@@ -170,7 +172,7 @@ def validate(test_data, test_labels, N_test, model, args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--model', type=str,
-                      default='models/NetModel.py')
+                      default='models/TestModel.py')
   parser.add_argument('--gpu', type=int, default=-1)
   parser.add_argument('--epoch', type=int, default=100)
   parser.add_argument('--batchsize', type=int, default=128)

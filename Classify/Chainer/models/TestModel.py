@@ -2,10 +2,10 @@ from chainer import Variable, FunctionSet
 import chainer.functions as F
 
 
-class NetModel(FunctionSet):
+class TestModel(FunctionSet):
 
     def __init__(self):
-        super(NetModel, self).__init__(
+        super(TestModel, self).__init__(
             conv1=F.Convolution2D(1, 32, 3, stride=1, pad=1),
             bn1=F.BatchNormalization(32),
             conv2=F.Convolution2D(32, 32, 3, stride=1, pad=1),

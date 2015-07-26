@@ -291,6 +291,6 @@ def test():
     print features
         
 if __name__ == '__main__':
-    #test()
-    extract_text_features(Settings.MOVIES_REVIEWS_COLLECTION)
+    test()
+    #extract_text_features(Settings.MOVIES_REVIEWS_COLLECTION)
 

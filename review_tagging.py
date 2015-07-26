@@ -21,7 +21,7 @@ def extract_tags_job(collection_name, identifier, skip, count):
     done = 0
     start = time.time()
     stopwords = load_stopwords()
-    filename = name + '_tags_' + str(identifier) + '.json'
+    filename = name + '_tags2_' + str(identifier) + '.json'
     #english_postagger = POSTagger('./postagger/models/wsj-0-18-left3words-distsim.tagger', \
     #    './postagger/stanford-postagger.jar')
     rvs = Reviews(collection_name=collection_name)
@@ -53,6 +53,7 @@ def extract_tags_job(collection_name, identifier, skip, count):
                 tag['review_id'] = review['review_id']
                 tag['item_id'] = review['item_id']
                 tag['user_id'] = review['user_id']
+                tag['rating'] = review['rating']
                 tag['text'] = review['text']
                 tag['words'] = words
                 _file.write(json.dumps(tag, indent=1).replace('\n', ''))

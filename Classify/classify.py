@@ -349,11 +349,12 @@ def oneVsOne_classify( ds ):
 
 def _test():
   filename = os.path.join(BASE_DIR, 'yelp_all_features.txt')
-  #flist = range(15,66)
-  flist = range(15)
+  #flist = range(13,63)
+  flist = range(13)
+  #flist = range(63)
   flist.append(65)
-  #usecols = tuple(flist)
-  usecols = None
+  usecols = tuple(flist)
+  #usecols = None
   ds = make_data(filename, usecols)
   TEST_SIZE = 0.2
   RANDOM_STATE = 0
@@ -362,14 +363,14 @@ def _test():
   
   print X_train.shape, X_val.shape, y_train.shape, y_val.shape
   
-  # gaussianNB_classify( ds )  # Bad (30%)
-  # multinomialNB_classify( ds ) # Bad (40%)
+  #gaussianNB_classify( ds )  # Bad (30%)
+  #multinomialNB_classify( ds ) # Bad (40%)
   # LDA_classify( ds ) # Normal and fast (70%)
   # QDA_classify( ds ) # Fair bad (50%)
   
-  # adaBoost_classify( ds ) # Fair bad (63%)
-  decisionTree_classify( ds ) # VERY GOOD and FAST (99%)
-  # randomForest_classify( ds ) # fair good and fast (80%)
+  #adaBoost_classify( ds ) # Fair bad (63%)
+  #decisionTree_classify( ds ) # VERY GOOD and FAST (99%)
+  #randomForest_classify( ds ) # fair good and fast (80%)
   # extraTree_classify( ds ) # fair good (80%) but slow
 
   # nearestCentroid_classify( ds ) # bad (8%)but only text is 30%
@@ -377,7 +378,7 @@ def _test():
   
   # svc_classify(ds) # Normal but very slow (77%)
   # linear_svm_sgd_classify( ds ) # normal 70% and normal fast
-  # logistic_classify( ds ) # Fair good and normal fast (92%)  
+  logistic_classify( ds ) # Fair good and normal fast (92%)  
   
   # oneVsRest_classify( ds ) # bad and slow about 54%, linearSVC
   # oneVsOne_classify( ds ) # GOOD but slow about 98%, linearSVC, computational

@@ -11,6 +11,8 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--infile', '-i', type=str, default='yelp_all_features.txt')
   parser.add_argument('--outdir', '-o', type=str, default=Settings.DATA_DIR)
+  parser.add_argument('--train_rate', type=float, default=0.5)
+  parser.add_argument('--test_rate', type=float, default=0.5)
   args = parser.parse_args()
   print args
 
@@ -21,7 +23,6 @@ if __name__ == '__main__':
   labels = []
 
   filename = os.path.join(args.outdir, args.infile)
-  RATE = 0.8
   for features in ['text_only', 'topics_only', 'text_topics']:
     print features
 
@@ -44,6 +45,11 @@ if __name__ == '__main__':
     all_data = np.loadtxt(filename, delimiter=' ', usecols=usecols)
     N, F = all_data.shape
     
+    N_train = int(N * args.train_rate)
+    N_test = int(N * args.test_rate)
+
+    assert(N_train + N_test <= N)
+
     for i in range(N):
       tmp = int(all_data[i,F-1] / 0.2)
       if tmp == 5:
@@ -52,10 +58,8 @@ if __name__ == '__main__':
 
     # Random split into 20 train-test data pairs
     for i in range(Settings.NUM_TEST):
-      N_train = int(N*RATE)
-      N_test = N - N_train
       p_train = np.random.permutation(N)[:N_train]
-      p_test = np.random.permutation(N)[N_train:]
+      p_test = np.random.permutation(N)[N_train:(N_train + N_test)]
 
       train_data = all_data[p_train, 0:(F-1)]
       train_label = all_data[p_train, F-1]

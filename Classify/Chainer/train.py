@@ -14,13 +14,15 @@ from utils import load_dataset, global_contrast_norm
 from settings import Settings
 from transform import Transform
 import pickle
-#from draw_loss import draw_loss_curve
-from progressbar import ProgressBar
+from draw_loss import draw_loss_curve
+#from progressbar import ProgressBar
 #from multiprocessing import Process, Queue
 
 def create_result_dir(args):
   u'''Create log file'''
   result_dir =  os.path.join(args.result_dir, os.path.basename(args.model).split('.')[0])
+  result_dir += '_' + args.site + '_' + args.features
+  result_dir += '_data_' + str(args.data_index)
   result_dir += '_' + time.strftime('%Y-%m-%d_%H-%M-%S_')
   result_dir += str(time.time()).replace('.', '')
   if not os.path.exists(result_dir):
@@ -94,7 +96,7 @@ def train(train_data, train_labels, N, model, optimizer, args, trans):
   # aug_worker.start()
 
   # training
-  pbar = ProgressBar(N)
+  # pbar = ProgressBar(N)
   perm = np.random.permutation(N)
   sum_accuracy = 0
   sum_loss = 0
@@ -129,11 +131,12 @@ def train(train_data, train_labels, N, model, optimizer, args, trans):
     sum_loss += float(cuda.to_cpu(loss.data)) * args.batchsize
     sum_accuracy += float(cuda.to_cpu(acc.data)) * args.batchsize
     
-    msg = 'train: loss={}, accuracy={}'.format(
+    msg = 'train {}% : loss={}, accuracy={}'.format(
+      int((i+args.batchsize)*100 / N),
       sum_loss / (i + args.batchsize), sum_accuracy / (i + args.batchsize) )
-    print('\n%s' % msg)
+    print('%s' % msg)
 
-    pbar.update(i + args.batchsize if (i + args.batchsize) < N else N)
+    #pbar.update(i + args.batchsize if (i + args.batchsize) < N else N)
 
   # x_batch_queue.put(None)
   # aug_worker.join()
@@ -142,7 +145,7 @@ def train(train_data, train_labels, N, model, optimizer, args, trans):
 
 def validate(test_data, test_labels, N_test, model, args):
   u'''Validate'''
-  pbar = ProgressBar(N_test)
+  #pbar = ProgressBar(N_test)
   sum_accuracy = 0
   sum_loss = 0
   for i in range(0, N_test, args.batchsize):
@@ -160,22 +163,23 @@ def validate(test_data, test_labels, N_test, model, args):
     sum_loss += float(cuda.to_cpu(loss.data)) * args.batchsize
     sum_accuracy += float(cuda.to_cpu(acc.data)) * args.batchsize
 
-    msg = 'validate: loss={}, accuracy={}'.format(
+    msg = 'validate {}%: loss={}, accuracy={}'.format(
+      int((i+args.batchsize)*100 / N_test),
       sum_loss / (i + args.batchsize), sum_accuracy / (i + args.batchsize) )
-    print('\n%s' % msg)
+    print('%s' % msg)
 
-    pbar.update(i + args.batchsize 
-                if (i + args.batchsize) < N_test else N_test)
+    #pbar.update(i + args.batchsize 
+    #           if (i + args.batchsize) < N_test else N_test)
 
   return sum_loss, sum_accuracy
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--model', type=str,
-                      default='models/TestModel.py')
+                      default='models/NetModel.py')
   parser.add_argument('--gpu', type=int, default=-1)
   parser.add_argument('--epoch', type=int, default=100)
-  parser.add_argument('--batchsize', type=int, default=128)
+  parser.add_argument('--batchsize', type=int, default=256)
   parser.add_argument('--prefix', type=str,
                       default='NetModel')
   parser.add_argument('--snapshot', type=int, default=10)
@@ -246,8 +250,10 @@ if __name__ == '__main__':
       print('\n%s' % msg)
 
       if epoch == 1 or epoch % args.snapshot == 0:
-          model_fn = '%s/%s_epoch_%d.chainermodel' % (
-              result_dir, args.prefix, epoch + args.epoch_offset)
+          model_fn = '%s/%s_%s_%s_dt_%s_epoch_%d.chainermodel' % (
+              result_dir, args.site, args.features, args.prefix, 
+              str(args.data_index), epoch + args.epoch_offset)
           pickle.dump(model, open(model_fn, 'wb'), -1)
 
-      draw_loss_curve(log_fn, '%s/log.jpg' % result_dir)
+      draw_loss_curve(log_fn, '%s/%s_%s_%s_dt_%s_log.jpg' % (result_dir, args.site, 
+                      args.features, args.prefix, str(args.data_index) ) )

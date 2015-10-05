@@ -1,0 +1,3 @@
+2015-07-28 23:49:26,772 [INFO] Namespace(classifier='all', data_dir='../../Dataset/Features', features='all', num_test=10, result_dir='../Results', site='all')
+2015-07-28 23:49:28,678 [INFO] Iter:	 site=yelp, design=text_only, classifier=OneVsRestClassifier_LinearSVC, iter=0, accuracy=0.542547770701
+2015-07-28 23:49:29,543 [INFO] Iter:	 site=yelp, design=text_only, classifier=OneVsRestClassifier_LinearSVC, iter=1, accuracy=0.543057324841

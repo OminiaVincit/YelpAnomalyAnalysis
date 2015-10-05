@@ -1,0 +1,1 @@
+python train.py --features topics --num_features 64 --epoch 5000 --snapshot 100 --norm 1 --data_index 0 --site yelp --epoch_offset 1600 --opt Adam --alpha 0.0001 --restart_from "/home/zoro/work/classify_result/NetModel_yelp_topics_64_data_0_2015-09-20_18-49-02_144274254249/yelp_topics_NetModel_dt_0_epoch_1600.chainermodel" 

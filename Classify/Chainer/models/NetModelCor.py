@@ -1,10 +1,10 @@
 from chainer import Variable, FunctionSet
 import chainer.functions as F
 
-class NetModel(FunctionSet):
+class NetModelCor(FunctionSet):
 
     def __init__(self):
-        super(NetModel, self).__init__(
+        super(NetModelCor, self).__init__(
             conv1=F.Convolution2D(1, 32, 2, stride=1, pad=1),
             bn1=F.BatchNormalization(32),
             conv2=F.Convolution2D(32, 32, 2, stride=1, pad=1),
@@ -15,10 +15,10 @@ class NetModel(FunctionSet):
 
     def forward(self, x_data, y_data, train=True):
         x, t = Variable(x_data), Variable(y_data)
-        h = F.relu(self.bn1(self.conv1(x), test = not train))
+        h = F.relu(self.bn1(self.conv1(x), test = not True))
         h = F.max_pooling_2d(h, 2, stride=2)
         
-        h = F.relu(self.bn2(self.conv2(h), test = not train))
+        h = F.relu(self.bn2(self.conv2(h), test = not True))
         h = F.max_pooling_2d(h, 2, stride=2)
 
         h = F.relu(self.conv3(h))

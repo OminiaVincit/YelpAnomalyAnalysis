@@ -8,6 +8,7 @@ class Settings:
     u'''Init'''
     pass
 
-  DATA_DIR = r'../../../Dataset/Features'
-  RESULT_DIR = r'../../../classify_result'
+  DATA_DIR = r'../../../../Dataset/Features'
+  FEATURES_DIR = r'../../../../Dataset/Features'
+  RESULT_DIR = r'../../../../classify_result'
   NUM_TEST = 20

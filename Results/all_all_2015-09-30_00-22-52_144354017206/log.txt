@@ -1,0 +1,37 @@
+2015-09-30 00:22:52,056 [INFO] Namespace(classifier='all', data_dir='../../Dataset/Features_bak', features='all', num_test=5, result_dir='../Results', site='all')
+2015-09-30 00:24:28,966 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=0, accuracy=0.523057324841
+2015-09-30 00:26:07,094 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=1, accuracy=0.536942675159
+2015-09-30 00:27:44,149 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=2, accuracy=0.533121019108
+2015-09-30 00:29:20,750 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=3, accuracy=0.531847133758
+2015-09-30 00:30:56,938 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=4, accuracy=0.530955414013
+2015-09-30 00:30:56,949 [INFO] Stat:	 site=yelp, design=text_only, classifier=SVC, num_test=5, mean=0.531184713376, median=0.531847133758
+2015-09-30 00:53:28,083 [INFO] Iter:	 site=yelp, design=topics_only, classifier=SVC, iter=0, accuracy=0.517197452229
+2015-09-30 01:16:07,789 [INFO] Iter:	 site=yelp, design=topics_only, classifier=SVC, iter=1, accuracy=0.508789808917
+2015-09-30 01:38:31,917 [INFO] Iter:	 site=yelp, design=topics_only, classifier=SVC, iter=2, accuracy=0.505987261146
+2015-09-30 02:01:27,919 [INFO] Iter:	 site=yelp, design=topics_only, classifier=SVC, iter=3, accuracy=0.514777070064
+2015-09-30 02:23:38,664 [INFO] Iter:	 site=yelp, design=topics_only, classifier=SVC, iter=4, accuracy=0.501910828025
+2015-09-30 02:23:38,664 [INFO] Stat:	 site=yelp, design=topics_only, classifier=SVC, num_test=5, mean=0.509732484076, median=0.508789808917
+2015-09-30 02:48:55,904 [INFO] Iter:	 site=yelp, design=text_topics, classifier=SVC, iter=0, accuracy=0.505350318471
+2015-09-30 03:14:00,609 [INFO] Iter:	 site=yelp, design=text_topics, classifier=SVC, iter=1, accuracy=0.509426751592
+2015-09-30 03:39:42,194 [INFO] Iter:	 site=yelp, design=text_topics, classifier=SVC, iter=2, accuracy=0.510063694268
+2015-09-30 04:04:36,030 [INFO] Iter:	 site=yelp, design=text_topics, classifier=SVC, iter=3, accuracy=0.512866242038
+2015-09-30 04:29:11,726 [INFO] Iter:	 site=yelp, design=text_topics, classifier=SVC, iter=4, accuracy=0.512101910828
+2015-09-30 04:29:11,726 [INFO] Stat:	 site=yelp, design=text_topics, classifier=SVC, num_test=5, mean=0.509961783439, median=0.510063694268
+2015-09-30 04:31:13,609 [INFO] Iter:	 site=tripadvisor, design=text_only, classifier=SVC, iter=0, accuracy=0.625107375138
+2015-09-30 04:33:08,801 [INFO] Iter:	 site=tripadvisor, design=text_only, classifier=SVC, iter=1, accuracy=0.616640078537
+2015-09-30 04:35:03,181 [INFO] Iter:	 site=tripadvisor, design=text_only, classifier=SVC, iter=2, accuracy=0.621916799607
+2015-09-30 04:36:59,801 [INFO] Iter:	 site=tripadvisor, design=text_only, classifier=SVC, iter=3, accuracy=0.618235366303
+2015-09-30 04:38:54,130 [INFO] Iter:	 site=tripadvisor, design=text_only, classifier=SVC, iter=4, accuracy=0.621794085164
+2015-09-30 04:38:54,130 [INFO] Stat:	 site=tripadvisor, design=text_only, classifier=SVC, num_test=5, mean=0.62073874095, median=0.621794085164
+2015-09-30 05:01:57,739 [INFO] Iter:	 site=tripadvisor, design=topics_only, classifier=SVC, iter=0, accuracy=0.61639464965
+2015-09-30 05:24:54,561 [INFO] Iter:	 site=tripadvisor, design=topics_only, classifier=SVC, iter=1, accuracy=0.619830654068
+2015-09-30 05:48:02,125 [INFO] Iter:	 site=tripadvisor, design=topics_only, classifier=SVC, iter=2, accuracy=0.611240643024
+2015-09-30 06:11:33,318 [INFO] Iter:	 site=tripadvisor, design=topics_only, classifier=SVC, iter=3, accuracy=0.619339796294
+2015-09-30 06:34:57,786 [INFO] Iter:	 site=tripadvisor, design=topics_only, classifier=SVC, iter=4, accuracy=0.612099644128
+2015-09-30 06:34:57,787 [INFO] Stat:	 site=tripadvisor, design=topics_only, classifier=SVC, num_test=5, mean=0.615781077433, median=0.61639464965
+2015-09-30 07:00:33,852 [INFO] Iter:	 site=tripadvisor, design=text_topics, classifier=SVC, iter=0, accuracy=0.610995214137
+2015-09-30 07:26:31,556 [INFO] Iter:	 site=tripadvisor, design=text_topics, classifier=SVC, iter=1, accuracy=0.625352804025
+2015-09-30 07:52:58,261 [INFO] Iter:	 site=tripadvisor, design=text_topics, classifier=SVC, iter=2, accuracy=0.609768069702
+2015-09-30 08:18:53,314 [INFO] Iter:	 site=tripadvisor, design=text_topics, classifier=SVC, iter=3, accuracy=0.611976929685
+2015-09-30 08:44:33,707 [INFO] Iter:	 site=tripadvisor, design=text_topics, classifier=SVC, iter=4, accuracy=0.61394036078
+2015-09-30 08:44:33,707 [INFO] Stat:	 site=tripadvisor, design=text_topics, classifier=SVC, num_test=5, mean=0.614406675666, median=0.611976929685

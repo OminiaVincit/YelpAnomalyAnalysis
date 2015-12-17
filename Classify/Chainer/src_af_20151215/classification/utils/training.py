@@ -65,11 +65,11 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--training', '-t', default=100, type=int,
                         help='training epoch (<=0 value indicates no training)')
-    parser.add_argument('--save-interval', '-s', default=20, type=int,
+    parser.add_argument('--save-interval', '-s', default=50, type=int,
                         help='save the model after every <save_interval> epoch.')
-    parser.add_argument('--plot-interval', '-p', default=20, type=int,
+    parser.add_argument('--plot-interval', '-p', default=50, type=int,
                         help='plot the model after every <plot_interval> epoch.')
-    parser.add_argument('--backup-interval', '-b', default=20, type=int,
+    parser.add_argument('--backup-interval', '-b', default=50, type=int,
                         help='backup the model after every <backup_interval> epoch.')
     parser.add_argument('--verbose', '-v', default=-1, type=int,
                         help='verbose output of training progress on every <verbose> minibatch')
@@ -185,9 +185,10 @@ def main():
         print 'x_test',  x_test.shape,  x_test.nbytes/1024/1024,  'Mbytes ', 'y_test',  y_test.shape,  y_test.nbytes/1024,  'Kbs'
 
         # Peform preprocess
-        x_train = np.asarray(map(global_contrast_norm, x_train))
-        x_test = np.asarray(map(global_contrast_norm, x_test))
-        print 'Finished preprocess'        
+        if args.norm == 1:
+            x_train = np.asarray(map(global_contrast_norm, x_train))
+            x_test = np.asarray(map(global_contrast_norm, x_test))
+        print 'Finished preprocess with norm = ', args.norm        
 
         log.store_value('test_samples', len(y_test))
         log.store_value('train_samples', len(y_train))

@@ -29,10 +29,10 @@ class NetModel_FC(ClassificationModelBase):
         x = Variable(x_data, volatile=not train)
 
         h = F.relu(self.l1(x))
-        h = dropout(0.25)(h)
+        #h = dropout(0.25)(h)
 
         h = F.relu(self.l2(h))
-        h = dropout(0.25)(h)
+        #h = dropout(0.25)(h)
         
         h = self.lf(h)
         return h

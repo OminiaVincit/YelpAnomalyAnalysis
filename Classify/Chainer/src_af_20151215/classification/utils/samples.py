@@ -33,6 +33,28 @@ class RVTopicsSampleCreator(SampleCreator):
       test_data = np.array(test_data[:num_samples, 13:77], dtype=np.float32).reshape(num_samples, 1, 8, 8)
       return train_data, train_label, test_data, test_label
 
+class RVForCheckSampleCreator(SampleCreator):
+    def __init__(self):
+        pass
+    
+    def load_samples(self, data_dir, site, index, train_down_rate, test_down_rate):
+      """
+      Load samples from dataset
+      """
+      train_dat_filename = 'train_data_' + site + '_topics_64_features_order_' + str(index) + '.npy'
+      train_lb_filename = 'train_label_' + site + '_topics_64_features_order_' + str(index) + '.npy'
+
+      train_data = np.load(os.path.join(data_dir, train_dat_filename))
+      train_label = np.load(os.path.join(data_dir, train_lb_filename))
+
+      test_dat_filename = 'test_data_' + site + '_topics_64_features_order_' + str(index) + '.npy'
+      test_lb_filename  = 'test_label_' + site + '_topics_64_features_order_' + str(index) + '.npy'
+
+      test_data = np.load(os.path.join(data_dir, test_dat_filename))
+      test_label = np.load(os.path.join(data_dir, test_lb_filename))
+
+      return train_data, train_label, test_data, test_label
+
 if __name__ == '__main__':
     creator = RVTopicsSampleCreator()
     creator.load_samples(Settings.FEATURES_DIR, 'yelp', 0)

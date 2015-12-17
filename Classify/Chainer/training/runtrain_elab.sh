@@ -1,2 +1,0 @@
-python train_cpu.py --gpu -1 --features topics --num_features 64 --epoch 2000 --snapshot 500 --norm 1 --data_index 3 --site tripadvisor --opt MomentumSGD --lr 0.01 --lr_decay_freq 1900 --seed 42311 --result_dir '../../../../classify_result/test_opt'
-python train_cpu.py --gpu -1 --features topics --num_features 64 --epoch 2000 --snapshot 500 --norm 1 --data_index 3 --site tripadvisor --opt Adam --alpha 0.01 --seed 23231 --result_dir '../../../../classify_result/test_opt'

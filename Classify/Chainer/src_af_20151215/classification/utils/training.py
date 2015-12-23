@@ -103,7 +103,10 @@ def main():
                     help='train downsampling rate')
     parser.add_argument('--test-down-rate', default=1.0, type=float,
                     help='test downsampling rate')
-    parser.add_argument('--norm', type=int, default=1)    
+    parser.add_argument('--norm', type=int, default=1)
+    parser.add_argument('--result-dir', default=None, type=str,
+                    help='result directory')
+
     args = parser.parse_args()
 
     # learning settings
@@ -127,6 +130,8 @@ def main():
     # --------------------------------------
     # initialize experiment
     model_desc_str = args.model if args.model is not None else task.default_model_desc
+    if args.result_dir is not None:
+        task.result_dir = os.path.join(task.result_dir, args.result_dir)
     if do_training:
         resume_dir = args.resume
         if getattr(args, 'continue'):
@@ -185,7 +190,7 @@ def main():
         print 'x_test',  x_test.shape,  x_test.nbytes/1024/1024,  'Mbytes ', 'y_test',  y_test.shape,  y_test.nbytes/1024,  'Kbs'
 
         # Peform preprocess
-        if args.norm == 1:
+        if args.norm >= 0:
             x_train = np.asarray(map(global_contrast_norm, x_train))
             x_test = np.asarray(map(global_contrast_norm, x_test))
         print 'Finished preprocess with norm = ', args.norm        

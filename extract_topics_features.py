@@ -40,9 +40,9 @@ if __name__ == '__main__':
   args = parser.parse_args()
   print args
 
-  for st in ['tripadvisor']:
+  for st in ['yelp', 'tripadvisor']:
     in_file = os.path.join(args.datadir, st + '_reviews_topics_distribution.json')
-    for num_f in [64, 100, 144, 196, 256]:
+    for num_f in [64]:
       out_file = os.path.join(args.datadir, st + '_topics_' \
                           + str(num_f) + '_features.txt')
 

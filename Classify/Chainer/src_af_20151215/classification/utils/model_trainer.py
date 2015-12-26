@@ -119,7 +119,7 @@ class ModelTrainer(object):
                 self._per_iter_hook()
 
             # logging
-            if self.iepoch >= 0:
+            if self.iepoch >= 0 and self.batch_log is not None:
                 norm = create_norm(grad=g_norm_val, weight=w_norm_val, grad_ratio=ratio_val)
                 cost = create_cost(loss=err, accuracy=acc_val)
                 batch_logs_in_epoch.append(log_entry(total_epoch=self.iepoch, inepoch_minibatch=ibatch, n_minibatch_in_epoch=n_minibatch_in_epoch,
@@ -131,7 +131,8 @@ class ModelTrainer(object):
 
         dt = time.time() - t
 
-        self.batch_log.add_logs(batch_logs_in_epoch) # I/O at once.
+        if self.batch_log is not None:
+            self.batch_log.add_logs(batch_logs_in_epoch) # I/O at once.
 
         self._print_epoch_progress(ModelTrainer.IterType.TRAIN_DROPOUT, dt, n_train, accum_err.mean(), accum_grad.mean(), accum_norm.mean(), accum_acc.mean())
         return accum_err.mean(), accum_acc.mean(), accum_grad.mean()
@@ -175,11 +176,12 @@ class ModelTrainer(object):
             accum_acc.add(acc_val, len(x_batch))
 
             # logging
-            cost = create_cost(loss=err, accuracy=acc_val)
-            batch_logs_in_epoch.append(log_entry(total_epoch=self.iepoch, inepoch_minibatch=ibatch, n_minibatch_in_epoch=n_minibatch_in_epoch,
-                log_type=LogType.minibatch, data_type=data_type, measure_type=measure_type,
-                cost=cost,
-                ))
+            if self.batch_log is not None:
+                cost = create_cost(loss=err, accuracy=acc_val)
+                batch_logs_in_epoch.append(log_entry(total_epoch=self.iepoch, inepoch_minibatch=ibatch, n_minibatch_in_epoch=n_minibatch_in_epoch,
+                    log_type=LogType.minibatch, data_type=data_type, measure_type=measure_type,
+                    cost=cost,
+                    ))
 
             if self.verbose > 0 and ibatch % self.verbose == 0 and i > 0:
                 self._print_iter_progress(iter_type, ibatch, n_batch, accum_err.last(), None, None, accum_acc.last())
@@ -188,7 +190,8 @@ class ModelTrainer(object):
                 self._per_iter_hook()
 
         dt = time.time() - t
-        self.batch_log.add_logs(batch_logs_in_epoch) # I/O at once.
+        if self.batch_log is not None:
+            self.batch_log.add_logs(batch_logs_in_epoch) # I/O at once.
         self._print_epoch_progress(iter_type, dt, n_test, accum_err.mean(), None, None, accum_acc.mean())
         return accum_err.mean(), accum_acc.mean()
 
@@ -232,8 +235,10 @@ class ModelTrainer(object):
             log_type=LogType.epoch, data_type=DataType.test, measure_type=MeasureType.validation,
             cost=create_cost(loss=test_err, accuracy=test_acc),
             ))
-        self.epoch_log.flush()
-        self.batch_log.flush()
+        if self.epoch_log is not None:
+            self.epoch_log.flush()
+        if self.batch_log is not None:
+            self.batch_log.flush()
 
         res = dict(train_err=train_err, train_grad=train_grad, test_err=test_err)
         if train_acc is not None:

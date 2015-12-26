@@ -35,7 +35,7 @@ def split_dataset(site, train_rate, outdir):
   tmp_map = dict()
   for i in range(L):
     tmp_map[i] = all_data[all_data[:,-1] == i]
-    print i, tmp_map[i].shape
+    print i, tmp_map[i].shape, float(tmp_map[i].shape[0]) / float(all_data.shape[0])
 
   # Peform data spli
   N = 20 # number of splitation
@@ -59,11 +59,11 @@ def split_dataset(site, train_rate, outdir):
     # np.save('%s/%s_train_data_split_predict_%d' % (outdir, site, j), train_data)
     # np.save('%s/%s_test_data_split_predict_%d'  % (outdir, site, j), test_data)
     
-    # Divide data for classification exp
-    np.save('%s/%s_train_data_class_predict_%d' % (outdir, site, j), train_data)
-    np.save('%s/%s_test_data_class_predict_%d'  % (outdir, site, j), test_data)
+    # # Divide data for classification exp
+    np.save('%s/%s_train_data_split_class_%d' % (outdir, site, j), train_data)
+    np.save('%s/%s_test_data_split_class_%d'  % (outdir, site, j), test_data)
 
-    print 'Saved data'
+    print site, 'Saved data'
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -76,39 +76,44 @@ if __name__ == '__main__':
   if not os.path.exists(args.outdir):
     os.mkdir(args.outdir)
 
-  data = []
-  labels = []
+  if False:
+    data = []
+    labels = []
 
-  for site in ['yelp', 'tripadvisor']:
-    for num_features in [64]:
-      filename = site + '_topics_' + str(num_features) + '_features.txt'
-      filepath = os.path.join(args.outdir, filename)
-      # tlist = range(num_features)
-      # tlist.append(num_features + 2)
-      # usecols = tuple(tlist)
-      usecols = None
-      all_data = np.loadtxt(filepath, delimiter=' ', usecols=usecols)
-      print site, 'Topics data shape', all_data.shape
+    for site in ['yelp', 'tripadvisor']:
+      for num_features in [64]:
+        filename = site + '_topics_' + str(num_features) + '_features.txt'
+        filepath = os.path.join(args.outdir, filename)
+        # tlist = range(num_features)
+        # tlist.append(num_features + 2)
+        # usecols = tuple(tlist)
+        usecols = None
+        all_data = np.loadtxt(filepath, delimiter=' ', usecols=usecols)
+        print site, 'Topics data shape', all_data.shape
 
-      # Read text features
-      text_path = os.path.join(args.outdir, site + '_text_features.txt')
-      usetextcols = tuple(range(13))
-      text_data = np.loadtxt(text_path, delimiter=' ', usecols=usetextcols)
-      all_data = np.hstack((text_data, all_data))
-      print site, 'Combined text data shape', all_data.shape
+        # Read text features
+        text_path = os.path.join(args.outdir, site + '_text_features.txt')
+        usetextcols = tuple(range(13))
+        text_data = np.loadtxt(text_path, delimiter=' ', usecols=usetextcols)
+        print site, 'Text data shape', text_data.shape
 
-      (N, F) = all_data.shape
-      labels = np.zeros((N,1), dtype=all_data.dtype)
-      for i in range(N):
-        tmp = int(all_data[i,F-1] / 0.2)
-        if tmp == 5:
-          tmp = 4
-        labels[i, 0] = tmp
+        all_data = np.hstack((text_data, all_data))
+        print site, 'Combined text data shape', all_data.shape
 
-      all_data = np.hstack((all_data, labels))
-      print site, 'Combined label, data shape', all_data.shape
-      np.save('%s/%s_combined_data' % (args.outdir, site), all_data)
-      print 'Saved data'
+        (N, F) = all_data.shape
+        labels = np.zeros((N,1), dtype=all_data.dtype)
+        for i in range(N):
+          tmp = int(all_data[i,F-1] / 0.2)
+          if tmp == 5:
+            tmp = 4
+          labels[i, 0] = tmp
 
-  #split_dataset('yelp', 0.8, Settings.FEATURES_DIR)
+        all_data = np.hstack((all_data, labels))
+        print site, 'Combined label, data shape', all_data.shape
+        np.save('%s/%s_combined_data' % (args.outdir, site), all_data)
+        print 'Saved data'
+
+  split_dataset('yelp', args.train_rate, args.outdir)
+  split_dataset('tripadvisor', args.train_rate, args.outdir)
+
  

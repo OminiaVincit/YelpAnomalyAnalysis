@@ -26,9 +26,9 @@ from model_util import *
 import model_viewer
 import experiment_util
 import model_trainer
-from preprocess import global_contrast_norm
+from preprocess import global_contrast_norm, row_contrast_norm
 
-def load_or_create_experiment(task_name, result_base_dir, resume_dir=None, model_desc_str=None):
+def load_or_create_experiment(task_name, result_base_dir, resume_dir=None, model_desc_str=None, term=''):
     u'''load (if resume_dir is not None) or create a new experiment'''
     if resume_dir is not None:
         # load preious result directory
@@ -38,8 +38,8 @@ def load_or_create_experiment(task_name, result_base_dir, resume_dir=None, model
     else:
         # create result directory
         model_desc = experiment_util.ModelDescription.from_desc_str(model_desc_str)
-        experiment = experiment_util.ExperimentResult(os.path.join(result_base_dir, '{}_{}_{}'.format(
-            task_name, model_desc.class_name, experiment_util.now().strftime('%Y%m%d_%H%M%S'))))
+        experiment = experiment_util.ExperimentResult(os.path.join(result_base_dir, '{}_{}_{}_{}'.format(
+            task_name, model_desc.class_name, term, experiment_util.now().strftime('%Y%m%d_%H%M%S'))))
         shutil.copyfile(model_desc.file_path, experiment.model_structure_path)
         print 'Created experiment directory:', experiment.path
         experiment.set_model_desc(model_desc)
@@ -65,11 +65,11 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--training', '-t', default=100, type=int,
                         help='training epoch (<=0 value indicates no training)')
-    parser.add_argument('--save-interval', '-s', default=50, type=int,
+    parser.add_argument('--save-interval', '-s', default=100, type=int,
                         help='save the model after every <save_interval> epoch.')
-    parser.add_argument('--plot-interval', '-p', default=50, type=int,
+    parser.add_argument('--plot-interval', '-p', default=100, type=int,
                         help='plot the model after every <plot_interval> epoch.')
-    parser.add_argument('--backup-interval', '-b', default=50, type=int,
+    parser.add_argument('--backup-interval', '-b', default=100, type=int,
                         help='backup the model after every <backup_interval> epoch.')
     parser.add_argument('--verbose', '-v', default=-1, type=int,
                         help='verbose output of training progress on every <verbose> minibatch')
@@ -103,7 +103,7 @@ def main():
                     help='train downsampling rate')
     parser.add_argument('--test-down-rate', default=1.0, type=float,
                     help='test downsampling rate')
-    parser.add_argument('--norm', type=int, default=1)
+    parser.add_argument('--norm', type=int, default=-1)
     parser.add_argument('--result-dir', default=None, type=str,
                     help='result directory')
 
@@ -129,6 +129,7 @@ def main():
 
     # --------------------------------------
     # initialize experiment
+    term = '{}_{}'.format(args.site, args.index)
     model_desc_str = args.model if args.model is not None else task.default_model_desc
     if args.result_dir is not None:
         task.result_dir = os.path.join(task.result_dir, args.result_dir)
@@ -136,7 +137,7 @@ def main():
         resume_dir = args.resume
         if getattr(args, 'continue'):
             resume_dir = experiment_util.get_last_experiment()
-        experiment = load_or_create_experiment(args.task, task.result_dir, resume_dir, model_desc_str)
+        experiment = load_or_create_experiment(args.task, task.result_dir, resume_dir, model_desc_str, term)
         model_desc = experiment.get_model_desc()
     else:
         model_desc = experiment_util.ModelDescription.from_desc_str(model_desc_str)
@@ -190,9 +191,12 @@ def main():
         print 'x_test',  x_test.shape,  x_test.nbytes/1024/1024,  'Mbytes ', 'y_test',  y_test.shape,  y_test.nbytes/1024,  'Kbs'
 
         # Peform preprocess
-        if args.norm >= 0:
+        if args.norm > 0:
             x_train = np.asarray(map(global_contrast_norm, x_train))
             x_test = np.asarray(map(global_contrast_norm, x_test))
+        elif args.norm == 0:
+            x_train = np.asarray(map(row_contrast_norm, x_train))
+            x_test = np.asarray(map(row_contrast_norm, x_test))
         print 'Finished preprocess with norm = ', args.norm        
 
         log.store_value('test_samples', len(y_test))
@@ -210,7 +214,7 @@ def main():
         def create_trainer(mod, sz):
             t = model_trainer.ModelTrainer(mod, optimizer,
                     task.settings['weight_decay'], max_grad_norm, sz, args.verbose, calc_test_dropout, backup_weights, task.is_regression,
-                    args.gpu, log, log)
+                    args.gpu, None, log)  # off the bachlog file
             return t
 
         batchsize = model.max_batchsize

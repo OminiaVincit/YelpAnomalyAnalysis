@@ -33,7 +33,7 @@ def extract_topics_features_from_file(in_file, out_file, num_features):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('--datadir', type=str, default=Settings.FEATURES_DIR)
+  parser.add_argument('--datadir', type=str, default='/home/zoro/work/Dataset')
   parser.add_argument('--site', type=str, default='yelp',
                       choices=['yelp', 'tripadvisor'])
   parser.add_argument('--num_features', type=int, default=64)
@@ -42,9 +42,9 @@ if __name__ == '__main__':
 
   for st in ['yelp', 'tripadvisor']:
     in_file = os.path.join(args.datadir, st + '_reviews_topics_distribution.json')
-    for num_f in [64]:
+    for num_f in [100, 144, 196, 256]:
       out_file = os.path.join(args.datadir, st + '_topics_' \
                           + str(num_f) + '_features.txt')
-
+      print st, num_f
       extract_topics_features_from_file(in_file, out_file, num_f)
       

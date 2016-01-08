@@ -23,5 +23,15 @@ class Settings:
     TRIPADVISOR_CORPUS_COLLECTION = 'tripadvisor_corpus'
     MOVIES_CORPUS_COLLECTION = 'movies_corpus'
     
+    YELP_TFIDF_COLLECTION = 'yelp_tfidf_tokens'
+    TRIPADVISOR_TFIDF_COLLECTION = 'tripadvisor_tfidf_tokens'
+
+    TFIDF_DIM = 1024
+    GALC_DIM = 39
+    LIWC_DIM = 64
+    INQUIRER_DIM = 182
+
     NUMTOPICS = 50
     EPSILON = 1e-7
+
+    DATA_DIR = r'/home/zoro/work/Dataset'

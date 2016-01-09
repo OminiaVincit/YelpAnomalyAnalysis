@@ -2,10 +2,11 @@ import os
 import numpy as np
 import time
 
+import pickle
 from sklearn import svm
 from scipy.stats import spearmanr
 
-DATA_DIR = r'/home/zoro/work/Dataset/Features'
+DATA_DIR = r'/home/zoro/work/Dataset'
 text_ncol = 13
 
 def load_data(site, index, num_features, feature_tag, data_dir = DATA_DIR):
@@ -47,8 +48,8 @@ def svr(x_train, y_train, x_test, y_test):
   """
   start = time.time()
   reg = svm.SVR(kernel='rbf', C=1).fit(x_train, y_train)
-  mse, rmse, mae, rho, pval = score(reg, x_test, y_test)
-  print mse, rmse, mae, rho, pval, time.time() - start, 'seconds'
+  mae, mse, rmse, rho, pval = score(reg, x_test, y_test)
+  print mae, mse, rmse, rho, pval, time.time() - start, 'seconds'
 
 def score(reg, x_test, y_test):
   """
@@ -58,14 +59,12 @@ def score(reg, x_test, y_test):
   y_predict = reg.predict(x_test)
   diff = y_test - y_predict
   mse = np.mean(diff*diff)
-  #rmse = np.sqrt(mse)
-  #mae = np.mean(abs(diff))
+  rmse = np.sqrt(mse)
+  mae = np.mean(abs(diff))
 
   # Compute spearmanr correlation score
-  #y_predict = np.sort(y_predict)
-  #y_test = np.sort(y_test)
-  #rho, pval = spearmanr(y_predict, y_test)
-  return mse
+  rho, pval = spearmanr(y_predict, y_test)
+  return mae, mse, rmse, rho, pval
 
 def grid_search_cv(x_train, y_train, x_test, y_test):
   start = time.time()
@@ -91,7 +90,38 @@ def grid_search_cv(x_train, y_train, x_test, y_test):
   #params_max['kernel'], params_max['gamma'], params_max['C'], params_max['epsilon']
   print 'grid_search_cv in', time.time() - start
 
+def load_src_data(site, index, ftype, data_dir = DATA_DIR):
+  """
+  Load data from new structure data
+  """
+  # Get partition of exp
+  exp_file = '%s_partition.pickle' % site
+  with open(os.path.join(data_dir, exp_file), 'rb') as handle:
+    part = pickle.load(handle)
+
+  # Load data file
+  data_file = '%s_%s_features.npy' % (site, ftype)
+  data = np.load(os.path.join(data_dir, data_file))
+  print data.shape
+  train_index = part[index]['train']
+  test_index = part[index]['test']
+
+  x_train = data[train_index, 0:(-3)]
+  x_test = data[test_index, 0:(-3)]
+
+  y_train = data[train_index, -1]
+  y_test  = data[test_index, -1]
+
+  print 'x_train', x_train.shape, 'y_train', y_train.shape, 'x_test', x_test.shape, 'y_test', y_test.shape
+  return x_train, y_train, x_test, y_test
+
 if __name__ == '__main__':
-  x_train, y_train, x_test, y_test = load_data('yelp', 1, 64, 0)
-  print x_train.shape, x_test.shape, y_train.shape, y_test.shape
-  grid_search_cv(x_train, y_train, x_test, y_test)
+  # x_train, y_train, x_test, y_test = load_data('yelp', 1, 64, 0)
+  # print x_train.shape, x_test.shape, y_train.shape, y_test.shape
+  # grid_search_cv(x_train, y_train, x_test, y_test)
+
+  for site in ['yelp', 'tripadvisor']:
+    for ftype in ['STR', 'TOPICS_64', 'tfidf']:
+      print site, ftype
+      x_train, y_train, x_test, y_test = load_src_data(site, 1, ftype)
+      svr(x_train, y_train, x_test, y_test)

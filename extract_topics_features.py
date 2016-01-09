@@ -153,7 +153,7 @@ class Predict(object):
 
         # Write to pickle file
         with open(os.path.join(data_dir, vocal_file), 'wb') as handle:
-          pickle.dump(vocal, handle)
+          pickle.dump(vocal, handle, protocol=pickle.HIGHEST_PROTOCOL)
           print 'Dumped vocal file'
       else:
         # Load vocabulary from pickle

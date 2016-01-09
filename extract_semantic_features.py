@@ -483,6 +483,7 @@ def extract_INQUIRER_features(collection_name, dim):
     data = np.vstack(data)
     print 'Data shape', data.shape
     np.save('%s_INQUIRER_features' % site, data)
+    
 if __name__ == '__main__':
     #test()
     #extract_text_features(Settings.MOVIES_REVIEWS_COLLECTION)

@@ -26,10 +26,12 @@ class Settings:
     YELP_TFIDF_COLLECTION = 'yelp_tfidf_tokens'
     TRIPADVISOR_TFIDF_COLLECTION = 'tripadvisor_tfidf_tokens'
 
+    STR_DIM = 13
     TFIDF_DIM = 1024
     GALC_DIM = 39
     LIWC_DIM = 64
     INQUIRER_DIM = 182
+    TOPICS_DIM = 64
 
     NUMTOPICS = 50
     EPSILON = 1e-7

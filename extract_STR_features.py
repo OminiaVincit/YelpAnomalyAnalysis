@@ -1,6 +1,6 @@
 #!env python
 # -*- coding:utf-8 -*-
-'''Calculate for review text features score
+'''Calculate for review text structure features score
 '''
 
 import os
@@ -18,9 +18,7 @@ from nltk.corpus.reader.wordnet import WordNetError
 from settings import Settings
 from data_utils import Reviews, GenCollection
 
-from topic_predict import Predict
-
-def text_features(text):
+def process_STR_features(text, dim=Settings.STR_DIM):
     u'''Extract text features for review content'''
     
     # CC - Coordinating conjunction
@@ -87,7 +85,6 @@ def text_features(text):
     #neg_sent = open('./negative.txt').read()
     #negative_words=neg_sent.split('\n')
 
-    features = {}
     sentences = nltk.sent_tokenize(text.lower()) 
     num_sent = len(sentences)
     num_token = 0
@@ -150,6 +147,7 @@ def text_features(text):
     unique_words = 0 # number of unique words
     pos_sen = 0
     neg_sen = 0
+    sent_len = 0 # average length of sentences
     positive_count = 0 # number of positive words
     negative_count = 0 # number of negative words
 
@@ -196,24 +194,85 @@ def text_features(text):
     if num_sent > 0:
         sent_len = float(sent_len) / float(num_sent)
 
-    features['sent_len'] = sent_len
-    features['num_sent'] = num_sent
-    features['num_token'] = num_token
-    features['uniq_word_ratio'] = unique_words
-    features['pos_nn'] = pos_nn
-    features['pos_adj'] = pos_adj
-    features['pos_comp'] = pos_comp
-    features['pos_v'] = pos_v
-    features['pos_rb'] = pos_rb
-    features['pos_fw'] = pos_fw
-    features['pos_cd'] = pos_cd
-    features['pos_sen'] = pos_sen
-    features['neg_sen'] = neg_sen
-    #features['words'] = words
-    
+    # features = {}
+    # features['sent_len'] = sent_len
+    # features['num_sent'] = num_sent
+    # features['num_token'] = num_token
+    # features['uniq_word_ratio'] = unique_words
+    # features['pos_nn'] = pos_nn
+    # features['pos_adj'] = pos_adj
+    # features['pos_comp'] = pos_comp
+    # features['pos_v'] = pos_v
+    # features['pos_rb'] = pos_rb
+    # features['pos_fw'] = pos_fw
+    # features['pos_cd'] = pos_cd
+    # features['pos_sen'] = pos_sen
+    # features['neg_sen'] = neg_sen
+
+    features = np.zeros((dim, ))
+    features[0] = sent_len
+    features[1] = num_sent
+    features[2] = num_token
+    features[3] = unique_words
+    features[4] = pos_nn
+    features[5] = pos_adj
+    features[6] = pos_comp
+    features[7] = pos_v
+    features[8] = pos_rb
+    features[9] = pos_fw
+    features[10] = pos_cd
+    features[11] = pos_sen
+    features[12] = neg_sen
+
     return features
 
-def extract_text_features_job(collection_name, identifier, skip, count):
+def extract_STR_features(collection_name, dim):
+    """
+    Extract structure features from review text to npy file   
+    Consider only review with number of votes >= 10
+    """
+    # Debug time
+    start = time.time()
+
+    # For site name
+    idx = collection_name.find('_')
+    site = collection_name[0:idx]
+
+    rvs = Reviews(collection_name=collection_name)
+    rvs.cursor = rvs.collection.find()
+    N = rvs.cursor.count()
+
+    data = []
+    done = 0
+    for review in rvs.cursor:
+        votes = review['votes']
+        if votes < 10:
+            continue
+        helpful = review['helpful']
+        features = np.zeros((dim+3), )
+        if review.get('text'):
+            features[:dim] = process_STR_features(review['text'], dim)
+        features[dim] = helpful
+        features[dim+1] = votes
+        features[dim+2] = helpful / float(votes)
+
+        data.append(features)
+        done += 1
+        #print done, features
+        if done % 100 == 0:
+            end = time.time()
+            print str(site) + ' STR features: Done ' + str(done) + \
+                ' out of ' + str(N) + ' reviews in ' + \
+                ('%.2f' % (end - start)) + ' sec ~ ' + \
+                ('%.2f' % (done / (end - start))) + '/sec'
+            sys.stdout.flush()
+
+    print 'Number of processed reviews ', done
+    data = np.vstack(data)
+    print 'Data shape', data.shape
+    np.save('%s_STR_features' % site, data)
+
+def bug_extract_text_features_job(collection_name, identifier, skip, count):
     u'''Extract text features'''
     idx = collection_name.find('_')
     name = collection_name[0:idx]
@@ -233,7 +292,7 @@ def extract_text_features_job(collection_name, identifier, skip, count):
             for review in rvs.cursor:
                 # print review['id'], review['text']
                 if not review.get('text'):
-                	continue
+                    continue
                 features = text_features(review['text'])
                 features['review_id'] = review['review_id']
                 features['item_id'] = review['item_id']
@@ -252,7 +311,7 @@ def extract_text_features_job(collection_name, identifier, skip, count):
                         ('%.2f' % (done / (end - start))) + '/sec'
                     sys.stdout.flush()
 
-def extract_text_features(collection_name, workers=5):
+def bug_extract_text_features(collection_name, workers=5):
     u'''Extract text features by collection'''
     rvs = Reviews(collection_name=collection_name)
     rvs.load_all_data()
@@ -287,10 +346,11 @@ def test():
         Grab the car keys... you know you\'re hungry for an amazing cheeseburger, \
         maybe some wings, and a cold beer! Easily, hands down, the best bar and grill in Pittsburgh'
 
-    features = text_features(s)
+    features = process_STR_features(s)
     print features
         
 if __name__ == '__main__':
     test()
-    #extract_text_features(Settings.MOVIES_REVIEWS_COLLECTION)
+    #extract_STR_features(Settings.YELP_REVIEWS_COLLECTION, dim=Settings.STR_DIM)
+    extract_STR_features(Settings.TRIPADVISOR_REVIEWS_COLLECTION, dim=Settings.STR_DIM)
 

@@ -67,13 +67,13 @@ class Train:
 
         return lda
 
-def make_model(collection_name):
+def make_model(collection_name, lda_num_topics):
     u'''Main function'''
     logging.basicConfig(format='%(asctime)s: %(levelname)s :%(message)s', level=logging.INFO)
     dictionary_path = 'models/dictionary_' + collection_name + '.dict'
     corpus_path = 'models/corpus_' + collection_name + '.lda-c'
-    lda_num_topics = 50
-    lda_model_path = 'models/lda_model_50_topics_' + collection_name + '.lda'
+
+    lda_model_path = 'models/lda_model_' + str(lda_num_topics) +'_topics_' + collection_name + '.lda'
 
     corpus_collection = GenCollection(collection_name=collection_name)
     corpus_collection.load_all_data()
@@ -86,11 +86,11 @@ def make_model(collection_name):
 def test():
     pass
 
-def display():
+def display(lda_num_topics):
     u'''Display hidden topics'''
-    lda_model_path = '../Dataset/models/lda_model_50_topics_tripadvisor_corpus.lda'
+    lda_model_path = '../Dataset/models/lda_model_'+ str(lda_num_topics) +'_topics_tripadvisor_corpus.lda'
     lda1 = LdaModel.load(lda_model_path)
-    top_list = lda1.show_topics(num_topics=50, num_words=20, log=False, formatted=True)
+    top_list = lda1.show_topics(num_topics=lda_num_topics, num_words=20, log=False, formatted=True)
     index = 0
     for top in top_list:
         index += 1
@@ -107,8 +107,9 @@ def display():
         
 
 if __name__ == '__main__':
-    #make_model(Settings.TRIPADVISOR_CORPUS_COLLECTION)
-    display()
+    make_model(Settings.YELP_CORPUS_COLLECTION, lda_num_topics=64)
+    make_model(Settings.TRIPADVISOR_CORPUS_COLLECTION, lda_num_topics=64)
+    #display()
 
 
     

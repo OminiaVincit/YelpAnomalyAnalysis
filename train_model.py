@@ -62,7 +62,7 @@ class Train:
     def run(lda_model_path, corpus_path, num_topics, id2word):
         u'''Training to create LDA model'''
         corpus = corpora.BleiCorpus(corpus_path)
-        lda = gensim.models.LdaModel(corpus, num_topics=num_topics, id2word=id2word)
+        lda = gensim.models.LdaModel(corpus, num_topics=num_topics, id2word=id2word, iterations=200)
         lda.save(lda_model_path)
 
         return lda
@@ -70,14 +70,15 @@ class Train:
 def make_model(collection_name, lda_num_topics):
     u'''Main function'''
     logging.basicConfig(format='%(asctime)s: %(levelname)s :%(message)s', level=logging.INFO)
-    dictionary_path = 'models/dictionary_' + collection_name + '.dict'
-    corpus_path = 'models/corpus_' + collection_name + '.lda-c'
+    dictionary_path = '../Dataset/models/dictionary_' + collection_name + '.dict'
+    corpus_path = '../Dataset/models/corpus_' + collection_name + '.lda-c'
 
-    lda_model_path = 'models/lda_model_' + str(lda_num_topics) +'_topics_' + collection_name + '.lda'
+    lda_model_path = '../Dataset/models/lda_model_' + str(lda_num_topics) +'_topics_' + collection_name + '.lda'
 
     corpus_collection = GenCollection(collection_name=collection_name)
-    corpus_collection.load_all_data()
-    corpus_cursor = corpus_collection.cursor
+    # corpus_collection.load_all_data()
+    corpus_cursor = corpus_collection.collection.find({"votes": {"$gt": 9}})
+    print collection_name, corpus_cursor.count()
 
     dictionary = Dictionary(corpus_cursor, dictionary_path).build()
     Corpus(corpus_cursor, dictionary, corpus_path).serialize()

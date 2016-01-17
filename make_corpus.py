@@ -6,6 +6,8 @@
 import json
 import time
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 from nltk.stem.wordnet import WordNetLemmatizer
 import multiprocessing
 
@@ -126,6 +128,71 @@ def add_lemmas(collection_name):
                     ('%.2f' % (done / (end - start))) + '/sec'
                 sys.stdout.flush()
 
+def get_supervised_corpus(collection_name):
+    """
+    Get corpus of reviews which have number of votes >= 10
+    """
+    done = 0
+    start = time.time()
+    corpus_collection = GenCollection(collection_name=collection_name)
+    corpus_collection.load_all_data()
+    corpus_cursor = corpus_collection.cursor
+    N = corpus_cursor.count()
+    f = open('%s_data.dat' % collection_name, 'w')
+    labels = []
+    word_list = {}
+    count = 0
+    for review in corpus_cursor:
+        votes = review['votes']
+        if votes < 10:
+            continue
+        # Get label
+        helpful = review['helpful']
+        lab = helpful / float(votes)
+        lab = int(lab/0.2)
+        if lab == 5:
+            lab = 4
+        labels.append(lab)
+
+        words = review['words']
+        freq = {}
+        for word in words:
+            if word not in freq:
+                freq[word] = 1
+            else:
+                freq[word] += 1
+
+            if word not in word_list:
+                word_list[word] = count
+                count += 1
+
+        num_uniques = 0
+        for word in freq:
+            if freq[word] == 1:
+                num_uniques += 1
+        
+        msg = []
+        msg.append(num_uniques)
+        for word in freq:
+            tmp = '%d:%d' % (word_list[word], freq[word])
+            msg.append(tmp)
+        msg = ' '.join([str(m) for m in msg])
+        #print msg
+        f.write( msg + '\n' )
+
+        done += 1
+        if done % 1000 == 0:
+            end = time.time()
+            print 'Done ' + str(done) + \
+                ' out of ' + str(N) + ' in ' + \
+                ('%.2f' % (end - start)) + ' sec ~ ' + \
+                ('%.2f' % (done / (end - start))) + '/sec'
+            sys.stdout.flush()
+
+    g = open('%s_labels.dat' % collection_name, 'w')
+    for lb in labels:
+        g.write( str(g) + '\n' )
+
 if __name__ == '__main__':
     word = {'word':'fighting', 'pos':'NN'}
     print corpus_condition(word)
@@ -133,5 +200,7 @@ if __name__ == '__main__':
     word = {'word':'fight+ing', 'pos':'NN'}
     print corpus_condition(word)
 
-    add_lemmas(Settings.TRIPADVISOR_TAGS_COLLECTION)
+    #add_lemmas(Settings.TRIPADVISOR_TAGS_COLLECTION)
     #add_lemmas(Settings.YELP_TAGS_COLLECTION)
+    get_supervised_corpus(Settings.YELP_CORPUS_COLLECTION)
+    get_supervised_corpus(Settings.TRIPADVISOR_CORPUS_COLLECTION)

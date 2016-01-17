@@ -37,3 +37,6 @@ class Settings:
     EPSILON = 1e-7
 
     DATA_DIR = r'/home/zoro/work/Dataset'
+
+    CATEGORIES = ['yelp', 'tripadvisor']
+    FEATURES = ['STR', 'TOPICS_64', 'TFIDF', 'LIWC', 'INQUIRER', 'GALC']

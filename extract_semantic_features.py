@@ -2,10 +2,12 @@
 # -*- coding:utf-8 -*-
 '''Calculate for tf-idf features score
 '''
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 import os
 import time
-import sys
 import nltk
 import json
 import numpy as np
@@ -22,6 +24,24 @@ from settings import Settings
 from data_utils import Reviews, GenCollection
 
 import json
+
+EXCEPT_CHAR = [u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9',
+u'!', u'"', u'#', u'$', u'%', u'&', u'\'', u'(', u')', u'-', u'=', u'^', u'~', 
+u'¥', u'|', u'@', u'`', u'[', u'{', u';', u'+', u':', u'*', u']', u'}', 
+u',', u'<', u'>', u'.', u'/', u'?', u'_']
+
+def corpus_condition(word):
+    """
+    Condition of word to add to corpus
+    """
+    save_flag = False
+    if len(word) > 2:
+        save_flag = True
+        for ch in word:
+            if ch in EXCEPT_CHAR:
+                save_flag = False
+                break
+    return save_flag
 
 def freq(word, tokens):
     return tokens.count(word)
@@ -74,8 +94,9 @@ def make_tf_idf_reviews(collection_name):
         docs[rvid] = {'freq':{}, 'tf':{}}
         
         tokens = tokenizer.tokenize(review['text'])
-        tokens = [lem.lemmatize(token.lower()) for token in tokens if len(token) > 2]
+        tokens = [lem.lemmatize(token.lower()) for token in tokens if corpus_condition(token)]
         tokens = [token for token in tokens if token not in stopwds]
+        tokens = [token.decode('utf-8') for token in tokens]
 
         for token in set(tokens):
             # The frequency computed for each review
@@ -490,13 +511,13 @@ if __name__ == '__main__':
     #make_tf_idf_reviews(Settings.YELP_REVIEWS_COLLECTION)
     #make_tf_idf_reviews(Settings.TRIPADVISOR_REVIEWS_COLLECTION)
     #load_tfidf_vocal('yelp')
-    #extract_tfidf_features(Settings.YELP_TFIDF_COLLECTION, dim=1024)
-    #extract_tfidf_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=1024)
-    extract_GALC_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.GALC_DIM)
+    extract_tfidf_features(Settings.YELP_TFIDF_COLLECTION, dim=Settings.TFIDF_DIM)
+    # extract_tfidf_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.TFIDF_DIM)
+    # extract_GALC_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.GALC_DIM)
     extract_GALC_features(Settings.YELP_TFIDF_COLLECTION, dim=Settings.GALC_DIM)
     #load_LIWC_vocal()
     extract_LIWC_features(Settings.YELP_TFIDF_COLLECTION, dim=Settings.LIWC_DIM)
-    extract_LIWC_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.LIWC_DIM)
+    # extract_LIWC_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.LIWC_DIM)
     #load_INQUIRER_vocal(dim=Settings.INQUIRER_DIM)
-    extract_INQUIRER_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.INQUIRER_DIM)
+    # extract_INQUIRER_features(Settings.TRIPADVISOR_TFIDF_COLLECTION, dim=Settings.INQUIRER_DIM)
     extract_INQUIRER_features(Settings.YELP_TFIDF_COLLECTION, dim=Settings.INQUIRER_DIM)

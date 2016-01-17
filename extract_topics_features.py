@@ -104,12 +104,19 @@ class Predict(object):
         return nouns
 
     def run_single(self, new_review):
-        u'''Run model for predict topic'''
-        nouns = self.extract_lemmatized_nouns(new_review)
-        new_review_bow = self.dictionary.doc2bow(nouns)
-        new_review_lda = self.lda[new_review_bow]
+      u'''Run model for predict topic'''
+      nouns = self.extract_lemmatized_nouns(new_review)
+      new_review_bow = self.dictionary.doc2bow(nouns)
+      new_review_lda = self.lda[new_review_bow]
 
-        return new_review_lda
+      return new_review_lda
+
+    def run_single_word(self, new_word):
+      u'''Run model for predict topic of new word'''
+      new_review_bow = self.dictionary.doc2bow([new_word])
+      new_review_lda = self.lda[new_review_bow]
+
+      return new_review_lda
 
     def extract_vocal_topics_features(self, data_dir=Settings.DATA_DIR):
       """
@@ -138,7 +145,7 @@ class Predict(object):
           for word in review['words']:
             if word not in vocal:
               # Predict topic score
-              topics = self.run_single(word)
+              topics = self.run_single_word(word)
               top_arr = process_topics(topics, self.lda_num_topics)
               vocal[word] = top_arr
           
@@ -167,6 +174,7 @@ class Predict(object):
       done = 0
       dim = self.lda_num_topics
       rvs.cursor = rvs.collection.find()
+      N = rvs.cursor.count()
       for review in rvs.cursor:
           rvid = review['review_id']
           votes = review['votes']
@@ -196,6 +204,102 @@ class Predict(object):
       data = np.vstack(data)
       print 'Data shape', data.shape
       np.save('%s/%s_TOPICS_%d_features' % (data_dir, site, lda_num_topics), data)
+
+    def extract_multi_words_topics_features(self, data_dir=Settings.DATA_DIR):
+      """
+      Extract topics features to multi channels images (using corpus)
+      """
+      # Debug time
+      import pickle
+
+      start = time.time()
+
+      # For site name
+      site = self.site
+      lda_num_topics = self.lda_num_topics
+      rvs = Reviews(collection_name=self.collection_name)
+
+      # Create vocabulary correspond to model if not exist
+      vocal = {}
+      vocal_file = '%s_%d_topics_vocabularies.pickle' % (site, lda_num_topics)
+      if not os.path.isfile(os.path.join(data_dir, vocal_file)):
+        # Create vocabulary
+        start = time.time()
+        rvs.cursor = rvs.collection.find()
+        N = rvs.cursor.count()
+        done = 0
+        for review in rvs.cursor:
+          for word in review['words']:
+            if word not in vocal:
+              # Predict topic score
+              topics = self.run_single_word(word)
+              top_arr = process_topics(topics, self.lda_num_topics)
+              vocal[word] = top_arr
+          
+          done += 1
+          if done % 100 == 0:
+            end = time.time()
+            print str(site) + ' get vocabulary: Done ' + str(done) + \
+                ' out of ' + str(N) + ' reviews in ' + \
+                ('%.2f' % (end - start)) + ' sec ~ ' + \
+                ('%.2f' % (done / (end - start))) + '/sec'
+            sys.stdout.flush()
+
+        # Write to pickle file
+        with open(os.path.join(data_dir, vocal_file), 'wb') as handle:
+          pickle.dump(vocal, handle, protocol=pickle.HIGHEST_PROTOCOL)
+          print 'Dumped vocal file'
+      else:
+        # Load vocabulary from pickle
+        with open(os.path.join(data_dir, vocal_file), 'rb') as handle:
+          vocal = pickle.load(handle)
+          print 'Loaded vocal file'
+
+      print 'Size of vocabulary set', len(vocal)
+      # Form features file with 4 channels
+      num_channels = 4
+      data = []
+      done = 0
+      dim = self.lda_num_topics
+      total_dim = num_channels*dim*dim
+      rvs.cursor = rvs.collection.find()
+      N = rvs.cursor.count()
+      for review in rvs.cursor:
+          rvid = review['review_id']
+          votes = review['votes']
+          if votes < 10:
+              continue
+          helpful = review['helpful']
+          features = np.zeros((total_dim+3), )
+          features[total_dim] = helpful
+          features[total_dim+1] = votes
+          features[total_dim+2] = helpful / float(votes)
+          
+          begin = 0
+          end = dim
+          for word in review['words']:
+            if word in vocal:
+              features[begin:end] = vocal[word]
+              begin += dim
+              end += dim
+              if end >= total_dim:
+                break
+
+          data.append(features)
+          #print done, features.shape
+          done += 1
+          if done % 100 == 0:
+              end = time.time()
+              print str(site) + ' TOPICS features: Done ' + str(done) + \
+                  ' out of ' + str(N) + ' reviews in ' + \
+                  ('%.2f' % (end - start)) + ' sec ~ ' + \
+                  ('%.2f' % (done / (end - start))) + '/sec'
+              sys.stdout.flush()
+
+      print 'Number of processed reviews ', done
+      data = np.vstack(data)
+      print 'Data shape', data.shape
+      np.save('%s/%s_TOPICS_MATRIX_%d_features' % (data_dir, site, lda_num_topics), data)
 
 def bak_extract_topics_features_from_file(in_file, out_file, num_features):
   topics = 'topics_' + str(num_features)
@@ -289,6 +393,24 @@ def _test():
     top_arr = process_topics(topics)
     print 'Top arr: ', top_arr
 
+def _test_corpus():
+  rvs = Reviews(collection_name=Settings.TRIPADVISOR_CORPUS_COLLECTION)
+  rvs.cursor = rvs.collection.find()
+  data = {}
+  for review in rvs.cursor:
+    rvid = review['review_id']
+    votes = review['votes']
+    if votes < 10:
+        continue
+    numws = len(review['words'])
+    if numws not in data:
+      data[numws] = 0
+    else:
+      data[numws] += 1
+
+  print data
+
+
 if __name__ == '__main__':
   # parser = argparse.ArgumentParser()
   # parser.add_argument('--datadir', type=str, default='/home/zoro/work/Dataset')
@@ -298,12 +420,16 @@ if __name__ == '__main__':
   # args = parser.parse_args()
   # print args
 
-  _test()
+  #_test()
   predict = Predict(collection_name=Settings.YELP_CORPUS_COLLECTION, lda_num_topics=64)
   predict.extract_vocal_topics_features()
+  #predict.extract_multi_words_topics_features()
 
   predict = Predict(collection_name=Settings.TRIPADVISOR_CORPUS_COLLECTION, lda_num_topics=64)
   predict.extract_vocal_topics_features()
+  # predict.extract_multi_words_topics_features()
+
+  #_test_corpus()
 
   # for st in ['yelp', 'tripadvisor']:
   #   in_file = os.path.join(args.datadir, st + '_reviews_topics_distribution.json')

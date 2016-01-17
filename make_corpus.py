@@ -166,13 +166,8 @@ def get_supervised_corpus(collection_name):
                 word_list[word] = count
                 count += 1
 
-        num_uniques = 0
-        for word in freq:
-            if freq[word] == 1:
-                num_uniques += 1
-        
         msg = []
-        msg.append(num_uniques)
+        msg.append(len(freq))
         for word in freq:
             tmp = '%d:%d' % (word_list[word], freq[word])
             msg.append(tmp)

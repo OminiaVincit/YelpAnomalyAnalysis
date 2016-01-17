@@ -1,2 +1,0 @@
-2015-09-30 00:18:28,691 [INFO] Namespace(classifier='all', data_dir='../../Dataset/Features_bak', features='all', num_test=10, result_dir='../Results', site='all')
-2015-09-30 00:20:05,246 [INFO] Iter:	 site=yelp, design=text_only, classifier=SVC, iter=0, accuracy=0.524458598726

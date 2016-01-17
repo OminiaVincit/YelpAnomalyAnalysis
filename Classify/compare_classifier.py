@@ -3,182 +3,161 @@ import numpy as np
 import os
 import logging 
 import argparse
+import pickle
 
-from utils import Dataset, make_data, create_result_dir
-from sklearn.preprocessing import StandardScaler
+from utils import create_result_dir
 
-# For split training and test data
-from sklearn.cross_validation import train_test_split
+DATA_DIR = r'/home/zoro/work/Dataset'
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.lda import LDA
+from sklearn.qda import QDA
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier, AdaBoostClassifier
+from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LinearRegression, LogisticRegression
 
+from sklearn import svm, metrics
+from sklearn.svm import LinearSVC, SVC
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.multiclass import OneVsOneClassifier
 
-# For evaluation
-from sklearn.metrics import roc_auc_score
+# Not support for ver. 0.17
+#from sklearn.neural_network import MLPClassifier
+NUM_TEST = 3
 
-#import matplotlib.pyplot as plt
+def load_src_data(site, index, ftype, data_dir):
+  """
+  Load data from new structure data
+  """
+  # Get partition of exp
+  exp_file = '%s_partition.pickle' % site
+  with open(os.path.join(data_dir, exp_file), 'rb') as handle:
+    part = pickle.load(handle)
 
-BASE_DIR = r'../../Dataset/Features'
-RESULT_DIR = r'../Results'
+  # Load data file
+  data_file = '%s_%s_features.npy' % (site, ftype)
+  data = np.load(os.path.join(data_dir, data_file))
+  train_index = part[index]['train']
+  test_index = part[index]['test']
+
+  x_train = data[train_index, 0:(-3)]
+  x_test = data[test_index, 0:(-3)]
+
+  y_train = data[train_index, -1] / 0.2
+  y_train = y_train.astype(int)
+  y_train[y_train == 5] = 4
+
+  y_test  = data[test_index, -1] / 0.2
+  y_test = y_test.astype(int)
+  y_test[y_test == 5] = 4
+
+  #print data.shape
+  #print 'x_train', x_train.shape, 'y_train', y_train.shape, 'x_test', x_test.shape, 'y_test', y_test.shape
+  return x_train, y_train, x_test, y_test
+
+def classify(site, index, ftype, clf, data_dir=DATA_DIR):
+  """
+  Classify data with partition index and classifier clf
+  """
+  x_train, y_train, x_test, y_test = load_src_data(site, index, ftype, data_dir)
+  print y_test[y_test==2].shape, y_test[y_test==4].shape, y_test[y_test==5].shape
+  clf.fit(x_train, y_train)
+  accuracy = clf.score(x_test, y_test)
+  print accuracy
+
+def multi_classifier(site, ftype, data_dir=DATA_DIR):
+  """
+  Multi classifiers
+  """
+  classifiers = [
+    # GaussianNB(),
+    # MultinomialNB(),
+    # LDA(),
+    # #QDA(),
+    # DecisionTreeClassifier(),
+    # RandomForestClassifier(n_estimators=10, n_jobs=-1),
+    # ExtraTreesClassifier(n_estimators=10, n_jobs=-1),
+    # AdaBoostClassifier(n_estimators= 10, learning_rate = 1.0),
+    # NearestCentroid(),
+    # KNeighborsClassifier(),
+    # #LinearRegression(normalize=False, n_jobs=-1),
+    # #LinearRegression(normalize=True, n_jobs=-1),
+    # LinearRegression(n_jobs=-1),
+    # LogisticRegression(),
+    #SVC(kernel='rbf', gamma=2, C=1), # VERY SLOW
+    #SVC(kernel='linear', C=0.025), # VERY SLOW
+    # OneVsRestClassifier( LinearSVC( penalty='l1', loss='squared_hinge', dual=False, tol=1e-4 ) ),
+    # OneVsOneClassifier( LinearSVC( penalty='l1', loss='squared_hinge', dual=False, tol=1e-4 ) ),
+    OneVsRestClassifier( SVC(kernel='rbf', gamma=2, C=1), n_jobs=-1 ),
+    OneVsOneClassifier( SVC(kernel='rbf', gamma=2, C=1), n_jobs=-1 )
+  ]
+
+  names = [
+    # 'GaussianNB',
+    # 'MultinomialNB',
+    # 'LDA',
+    # #'QDA',
+    # 'DecisionTreeClassifier',
+    # 'RandomForestClassifier',
+    # 'ExtraTreesClassifier',
+    # 'AdaBoostClassifier',
+    # 'NearestCentroid',
+    # 'KNeighborsClassifier',
+    # #'LinearRegression-UnNormalize',
+    # #'LinearRegression-Normalize',
+    # 'LinearRegression',
+    # 'LogisticRegression',
+    # 'SVC_rbf',
+    # 'SVC_linear',
+    # 'OneVsRestClassifier_LinearSVC',
+    # 'OneVsOneClassifier_LinearSVC',
+    'OneVsRestClassifier_RbfSVC',
+    'OneVsOneClassifier_RbfSVC'
+  ]
+  num_test = NUM_TEST
+  x_train, y_train, x_test, y_test = None, None, None, None
+  acc_list = {}
+  for name in names:
+    acc_list[name] = []
+
+  for i in range(num_test):
+    x_train, y_train, x_test, y_test = load_src_data(site, i, ftype, data_dir)
+    for name, clf in zip(names, classifiers):
+      clf.fit(x_train, y_train)
+      accuracy = clf.score(x_test, y_test)
+      acc_list[name].append(accuracy)
+      msg = 'Iter:\t site={}, ftype={}, classifier={}, iter={}, accuracy={}'\
+        .format(site, ftype, name, i, accuracy)
+      logging.info(msg)
+      print ('%s' % msg)
+
+  # Out to log statistic results
+  for name in names:
+    mean_s = np.mean(acc_list[name])
+    med_s = np.median(acc_list[name])
+
+    msg = 'Stat:\t site={}, ftype={}, classifier={}, num_test={}, mean={}, median={}'\
+      .format(site, ftype, name, num_test, mean_s, med_s)
+    logging.info(msg)
+    print ('%s' % msg)
 
 if __name__ == '__main__':
-  u'Compare classifier with different features design'
-  from sklearn.naive_bayes import GaussianNB, MultinomialNB
-  from sklearn.lda import LDA
-  from sklearn.qda import QDA
-  from sklearn.tree import DecisionTreeClassifier
-  from sklearn.ensemble import RandomForestClassifier
-  from sklearn.ensemble import ExtraTreesClassifier, AdaBoostClassifier
-  from sklearn.neighbors.nearest_centroid import NearestCentroid
-  from sklearn.neighbors import KNeighborsClassifier
-  from sklearn.linear_model import SGDClassifier, LogisticRegression
-
-  from sklearn import svm, metrics
-  from sklearn.svm import LinearSVC, SVC
-  from sklearn.multiclass import OneVsRestClassifier
-  from sklearn.multiclass import OneVsOneClassifier
-
   parser = argparse.ArgumentParser()
-  parser.add_argument('--site', type=str, default='all',
-                      choices=['yelp', 'tripadvisor', 'movies', 'all'])
-  parser.add_argument('--data_dir', type=str, default=BASE_DIR)
-  parser.add_argument('--result_dir', type=str, default=RESULT_DIR)
-  parser.add_argument('--features', type=str, default='all',
-                      choices=['text_only', 'topics_only', 'text_topics', 'all'])
-  parser.add_argument('--num_test', type=int, default=10)
-  parser.add_argument('--classifier', type=str, default='all',
-                      choices= [
-                        'all',
-                        #'GaussianNB',
-                        #'MultinomialNB',
-                        #'LDA',
-                        #'QDA',
-                        #'DecisionTreeClassifier',
-                        #'RandomForestClassifier',
-                        #'ExtraTreesClassifier',
-                        #'AdaBoostClassifier',
-                        #'NearestCentroid',
-                        #'KNeighborsClassifier',
-                        #'SGDClassifier',
-                        #'LogisticRegression',
-                        #'SVC',
-                        #'SVC_linear',
-                        'OneVsRestClassifier_LinearSVC',
-                        'OneVsOneClassifier_LinearSVC'
-                      ])
-
-  
+  parser.add_argument('--logfile', type=str, default='log.txt')
   args = parser.parse_args()
 
-  print (args)
+  logging.basicConfig(
+    filename=args.logfile,
+    format='%(asctime)s : %(levelname)s : %(message)s', 
+    level=logging.INFO)
 
-  sitelist = []
-  designs = []
-  classifiers = []
-  names = []
-  # List of classifiers
-  CLASSIFIERS = [
-    #GaussianNB(),
-    #MultinomialNB(),
-    #LDA(),
-    #QDA(),
-    #DecisionTreeClassifier(),
-    #RandomForestClassifier(n_estimators=10),
-    #ExtraTreesClassifier(n_estimators=10),
-    #AdaBoostClassifier(n_estimators= 10, learning_rate = 1.0),
-    #NearestCentroid(),
-    #KNeighborsClassifier(),
-    #SGDClassifier(loss='hinge'),
-    #LogisticRegression(),
-    #SVC(gamma = 2, C=1), # VERY SLOW
-    #SVC(kernel='linear', C=0.025), # VERY SLOW
-    OneVsRestClassifier( LinearSVC( penalty='l1', loss='squared_hinge', dual=False, tol=1e-4 ) ),
-    OneVsOneClassifier( LinearSVC( penalty='l1', loss='squared_hinge', dual=False, tol=1e-4 ) )
-  ]
+  # clf = DecisionTreeClassifier()
+  # classify('yelp', 1, 'STR', clf)
 
-  NAMES = [
-    #'GaussianNB',
-    #'MultinomialNB',
-    #'LDA',
-    #'QDA',
-    #'DecisionTreeClassifier',
-    #'RandomForestClassifier',
-    #'ExtraTreesClassifier',
-    #'AdaBoostClassifier',
-    #'NearestCentroid',
-    #'KNeighborsClassifier',
-    #'SGDClassifier',
-    #'LogisticRegression',
-    #'SVC',
-    #'SVC_linear',
-    'OneVsRestClassifier_LinearSVC',
-    'OneVsOneClassifier_LinearSVC'
-  ]
-
-  # Create result dir
-  log_fn, result_dir = create_result_dir(args)
-
-  # Set site and features, classifiers
-  if args.site == 'all':
-    sitelist = ['yelp', 'tripadvisor', 'movies']
-  else:
-    sitelist.append(args.site)   
-
-  if args.features == 'all':
-    designs = ['text_only', 'topics_only', 'text_topics']
-  else:
-    designs.append(args.features)
-
-  if args.classifier == 'all':
-    classifiers = CLASSIFIERS
-    names = NAMES
-  else:
-    clf = CLASSIFIERS[NAMES.index()]
-    classifiers.append(clf)
-    names.append(args.classifiers)
-
-  num_test = 20
-  if args.num_test:
-    num_test = args.num_test
-
-  for site in sitelist:
-    filename = os.path.join(args.data_dir, site + '_all_features.txt')
-    for design in designs:
-      # Choosing active column
-      usecols = None
-      if design == 'text_only':
-        flist = range(13)
-        flist.append(65)
-      elif design == 'topics_only':
-        flist = range(13, 63)
-	flist.append(65)
-      else:
-	flist = range(63)
-	flist.append(65)
-      usecols = tuple(flist)
-
-      # Make training and testing data
-      ds = make_data(filename, usecols)
-      TEST_SIZE = 0.2
-
-      for name, clf in zip(names, classifiers):
-        acc_list = []
-        for i in range(num_test):
-          X_train, X_val, y_train, y_val = \
-            train_test_split(ds.features, ds.target, \
-                             test_size=TEST_SIZE)
-
-          clf.fit(X_train, y_train)
-          accuracy = clf.score(X_val, y_val)
-          acc_list.append(accuracy)
-          msg = 'Iter:\t site={}, design={}, classifier={}, iter={}, accuracy={}'\
-            .format(site, design, name, i, accuracy)
-          logging.info(msg)
-          print ('%s' % msg)
-
-        # Out to log - stat
-        mean_s = np.mean(acc_list)
-        med_s = np.median(acc_list)
-
-        msg = 'Stat:\t site={}, design={}, classifier={}, num_test={}, mean={}, median={}'\
-          .format(site, design, name, num_test, mean_s, med_s)
-        logging.info(msg)
-        print ('%s' % msg)  
+  for site in ['yelp', 'tripadvisor']:
+    for ftype in ['STR', 'TOPICS_64', 'tfidf', 'LIWC', 'INQUIRER', 'GALC']:
+    #for ftype in ['LIWC', 'INQUIRER', 'GALC']:
+      multi_classifier(site, ftype)
+  

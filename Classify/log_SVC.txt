@@ -1,0 +1,74 @@
+2016-01-12 05:30:27,451 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=0, accuracy=0.486242038217
+2016-01-12 14:43:06,900 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=0, accuracy=0.486242038217
+2016-01-12 16:07:15,720 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_linear, iter=0, accuracy=0.524968152866
+2016-01-12 16:15:45,568 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=1, accuracy=0.484840764331
+2016-01-12 17:43:36,308 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_linear, iter=1, accuracy=0.509426751592
+2016-01-12 17:52:04,418 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=2, accuracy=0.488407643312
+2016-01-12 19:02:31,044 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_linear, iter=2, accuracy=0.519363057325
+2016-01-12 19:11:03,081 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=3, accuracy=0.492356687898
+2016-01-12 20:30:28,447 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_linear, iter=3, accuracy=0.507515923567
+2016-01-12 20:39:23,209 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_rbf, iter=4, accuracy=0.490191082803
+2016-01-12 22:05:05,098 : INFO : Iter:	 site=yelp, ftype=STR, classifier=SVC_linear, iter=4, accuracy=0.524585987261
+2016-01-12 22:05:05,124 : INFO : Stat:	 site=yelp, ftype=STR, classifier=SVC_rbf, num_test=5, mean=0.488407643312, median=0.488407643312
+2016-01-12 22:05:05,125 : INFO : Stat:	 site=yelp, ftype=STR, classifier=SVC_linear, num_test=5, mean=0.517171974522, median=0.519363057325
+2016-01-12 22:37:47,126 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, iter=0, accuracy=0.519108280255
+2016-01-12 22:41:12,842 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, iter=0, accuracy=0.532611464968
+2016-01-12 23:14:07,120 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, iter=1, accuracy=0.517961783439
+2016-01-12 23:17:30,060 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, iter=1, accuracy=0.532866242038
+2016-01-12 23:49:38,036 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, iter=2, accuracy=0.52050955414
+2016-01-12 23:53:05,099 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, iter=2, accuracy=0.533757961783
+2016-01-13 00:25:35,879 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, iter=3, accuracy=0.511337579618
+2016-01-13 00:29:00,775 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, iter=3, accuracy=0.525859872611
+2016-01-13 01:02:01,159 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, iter=4, accuracy=0.528280254777
+2016-01-13 01:05:27,028 : INFO : Iter:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, iter=4, accuracy=0.543694267516
+2016-01-13 01:05:27,029 : INFO : Stat:	 site=yelp, ftype=TOPICS_64, classifier=SVC_rbf, num_test=5, mean=0.519439490446, median=0.519108280255
+2016-01-13 01:05:27,029 : INFO : Stat:	 site=yelp, ftype=TOPICS_64, classifier=SVC_linear, num_test=5, mean=0.533757961783, median=0.532866242038
+2016-01-13 01:46:19,656 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, iter=0, accuracy=0.570573248408
+2016-01-13 02:13:16,765 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_linear, iter=0, accuracy=0.519363057325
+2016-01-13 02:53:12,372 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, iter=1, accuracy=0.566878980892
+2016-01-13 03:20:09,164 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_linear, iter=1, accuracy=0.508025477707
+2016-01-13 03:59:50,789 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, iter=2, accuracy=0.57847133758
+2016-01-13 04:26:49,945 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_linear, iter=2, accuracy=0.523949044586
+2016-01-13 05:07:11,313 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, iter=3, accuracy=0.571464968153
+2016-01-13 05:34:04,119 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_linear, iter=3, accuracy=0.507133757962
+2016-01-13 06:14:22,030 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, iter=4, accuracy=0.566496815287
+2016-01-13 06:41:34,499 : INFO : Iter:	 site=yelp, ftype=tfidf, classifier=SVC_linear, iter=4, accuracy=0.523694267516
+2016-01-13 06:41:34,500 : INFO : Stat:	 site=yelp, ftype=tfidf, classifier=SVC_rbf, num_test=5, mean=0.570777070064, median=0.570573248408
+2016-01-13 06:41:34,520 : INFO : Stat:	 site=yelp, ftype=tfidf, classifier=SVC_linear, num_test=5, mean=0.516433121019, median=0.519363057325
+2016-01-13 07:11:28,972 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, iter=0, accuracy=0.51949044586
+2016-01-13 07:16:47,314 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_linear, iter=0, accuracy=0.537961783439
+2016-01-13 07:49:07,031 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, iter=1, accuracy=0.508152866242
+2016-01-13 07:54:34,637 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_linear, iter=1, accuracy=0.528917197452
+2016-01-13 08:27:04,454 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, iter=2, accuracy=0.524076433121
+2016-01-13 08:32:28,126 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_linear, iter=2, accuracy=0.537961783439
+2016-01-13 09:03:00,759 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, iter=3, accuracy=0.507388535032
+2016-01-13 09:08:38,324 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_linear, iter=3, accuracy=0.526751592357
+2016-01-13 09:42:04,730 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, iter=4, accuracy=0.523694267516
+2016-01-13 09:47:23,980 : INFO : Iter:	 site=yelp, ftype=LIWC, classifier=SVC_linear, iter=4, accuracy=0.541146496815
+2016-01-13 09:47:23,980 : INFO : Stat:	 site=yelp, ftype=LIWC, classifier=SVC_rbf, num_test=5, mean=0.516560509554, median=0.51949044586
+2016-01-13 09:47:23,981 : INFO : Stat:	 site=yelp, ftype=LIWC, classifier=SVC_linear, num_test=5, mean=0.534547770701, median=0.537961783439
+2016-01-13 10:41:03,789 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, iter=0, accuracy=0.519363057325
+2016-01-13 10:57:09,672 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, iter=0, accuracy=0.545987261146
+2016-01-13 11:53:42,672 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, iter=1, accuracy=0.508152866242
+2016-01-13 12:10:53,691 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, iter=1, accuracy=0.53821656051
+2016-01-13 13:10:17,578 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, iter=2, accuracy=0.523949044586
+2016-01-13 13:27:51,026 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, iter=2, accuracy=0.548280254777
+2016-01-13 14:21:27,820 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, iter=3, accuracy=0.507261146497
+2016-01-13 14:37:22,556 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, iter=3, accuracy=0.537834394904
+2016-01-13 15:35:26,580 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, iter=4, accuracy=0.523694267516
+2016-01-13 15:52:16,878 : INFO : Iter:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, iter=4, accuracy=0.544713375796
+2016-01-13 15:52:16,878 : INFO : Stat:	 site=yelp, ftype=INQUIRER, classifier=SVC_rbf, num_test=5, mean=0.516484076433, median=0.519363057325
+2016-01-13 15:52:16,878 : INFO : Stat:	 site=yelp, ftype=INQUIRER, classifier=SVC_linear, num_test=5, mean=0.543006369427, median=0.544713375796
+2016-01-13 16:13:18,947 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_rbf, iter=0, accuracy=0.515796178344
+2016-01-13 16:18:58,469 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_linear, iter=0, accuracy=0.522420382166
+2016-01-13 16:39:54,900 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_rbf, iter=1, accuracy=0.504968152866
+2016-01-13 16:47:14,752 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_linear, iter=1, accuracy=0.510445859873
+2016-01-13 17:08:33,392 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_rbf, iter=2, accuracy=0.517579617834
+2016-01-13 17:13:17,658 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_linear, iter=2, accuracy=0.526878980892
+2016-01-13 17:34:33,312 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_rbf, iter=3, accuracy=0.503949044586
+2016-01-13 17:39:14,598 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_linear, iter=3, accuracy=0.510573248408
+2016-01-13 18:00:45,523 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_rbf, iter=4, accuracy=0.516305732484
+2016-01-13 18:06:04,775 : INFO : Iter:	 site=yelp, ftype=GALC, classifier=SVC_linear, iter=4, accuracy=0.527006369427
+2016-01-13 18:06:04,775 : INFO : Stat:	 site=yelp, ftype=GALC, classifier=SVC_rbf, num_test=5, mean=0.511719745223, median=0.515796178344
+2016-01-13 18:06:04,775 : INFO : Stat:	 site=yelp, ftype=GALC, classifier=SVC_linear, num_test=5, mean=0.519464968153, median=0.522420382166
+2016-01-13 18:18:00,906 : INFO : Iter:	 site=tripadvisor, ftype=STR, classifier=SVC_rbf, iter=0, accuracy=0.589642900969

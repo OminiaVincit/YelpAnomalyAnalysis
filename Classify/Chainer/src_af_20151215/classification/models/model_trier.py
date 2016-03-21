@@ -201,3 +201,117 @@ class NetModel_5_linears(ClassificationModelBase):
         # return True
 
         return False
+
+class NetModel_BN(ClassificationModelBase):
+
+    def __init__(self):
+        n_units = 1024
+        super(NetModel_BN, self).__init__(
+            conv1_1=F.Convolution2D(3, 64, 3, stride=1, pad=1),
+            bn1_1=F.BatchNormalization(64, decay=0.9, eps=1e-5),
+            conv1_2=F.Convolution2D(64, 64, 3, stride=1, pad=1),
+            bn1_2=F.BatchNormalization(64, decay=0.9, eps=1e-5),
+
+            conv2_1=F.Convolution2D(64, 128, 3, stride=1, pad=1),
+            bn2_1=F.BatchNormalization(128, decay=0.9, eps=1e-5),
+            conv2_2=F.Convolution2D(128, 128, 3, stride=1, pad=1),
+            bn2_2=F.BatchNormalization(128, decay=0.9, eps=1e-5),
+
+            conv3_1=F.Convolution2D(128, 128, 3, stride=1, pad=1),
+            # conv3_2=F.Convolution2D(256, 256, 3, stride=1, pad=1),
+            # conv3_3=F.Convolution2D(256, 256, 3, stride=1, pad=1),
+            # conv3_4=F.Convolution2D(256, 256, 3, stride=1, pad=1),
+
+            l1=F.Linear(512, n_units),
+            # l2=F.Linear(n_units, n_units),
+            lf=F.Linear(n_units, 5)
+        )
+        self.name = 'NetModel_BN'
+
+    def apply(self, x_data, train, enable_dropout=False, finetune=False, verbose=False):
+        def dropout(ratio):
+            if ratio == 0.0:
+                return lambda v: v
+            return lambda v: F.dropout(v, train=train or enable_dropout, ratio=ratio)
+
+        def _print_macro(desc, shape, verbose=verbose):
+            if verbose:
+                print desc, shape
+
+        param = dict(test=not train, finetune=finetune)
+
+        x = Variable(x_data, volatile=not train)
+        _print_macro('x', x.data.shape)
+
+        h = F.relu(self.bn1_1(self.conv1_1(x), test = not train))
+        _print_macro('conv1_1->bn1_1->relu', h.data.shape)
+
+        h = F.max_pooling_2d(h, 2, stride=2)
+        _print_macro('maxpool_a', h.data.shape)
+        
+        h = F.relu(self.bn1_2(self.conv1_2(h), test = not train))
+        _print_macro('conv1_2->bn1_2->relu', h.data.shape)
+
+        h = F.max_pooling_2d(h, 2, stride=2)
+        _print_macro('maxpool_1', h.data.shape)
+
+        h = dropout(0.25)(h)
+        _print_macro('dropout', h.data.shape)
+
+        h = F.relu(self.bn2_1(self.conv2_1(h), test = not train))
+        _print_macro('conv2_1->bn2_1->relu', h.data.shape)
+
+        h = F.max_pooling_2d(h, 2, stride=2)
+        _print_macro('maxpool_b', h.data.shape)
+
+        h = F.relu(self.bn2_2(self.conv2_2(h), test = not train))
+        _print_macro('conv2_2->bn2_2->relu', h.data.shape)
+
+        h = F.max_pooling_2d(h, 2, stride=2)
+        _print_macro('maxpool_2', h.data.shape)
+
+        h = dropout(0.25)(h)
+        _print_macro('dropout', h.data.shape)
+
+        h = F.relu(self.conv3_1(h))
+        _print_macro('con3_1->relu', h.data.shape)
+
+        # h = F.relu(self.conv3_2(h))
+        # _print_macro('con3_2->relu', h.data.shape)
+
+        # h = F.relu(self.conv3_3(h))
+        # _print_macro('con3_3->relu', h.data.shape)
+
+        # h = F.relu(self.conv3_4(h))
+        # _print_macro('con3_4->relu', h.data.shape)
+
+        h = F.max_pooling_2d(h, 2, stride=2)
+        _print_macro('maxpool_3', h.data.shape)
+
+        h = dropout(0.25)(h)
+        _print_macro('dropout', h.data.shape)
+
+        h = dropout(0.5)(F.relu(self.l1(h)))
+        _print_macro('l1->relu->dropout', h.data.shape)
+
+        # h = dropout(0.5)(F.relu(self.l2(h)))
+        # _print_macro('l2->relu->dropout', h.data.shape)
+
+        h = self.lf(h)
+        _print_macro('lf', h.data.shape)
+
+        return h
+
+    def start_finetuning(self):
+        """
+        Run batch normalization in finetuning mode
+        it computes moving averages of mean and variance for evaluation
+        during training, and normalizes the input using statistics
+        """
+        # self.bn1_1.start_finetuning()
+        # self.bn1_2.start_finetuning()
+        # self.bn2_1.start_finetuning()
+        # self.bn2_2.start_finetuning()
+        # return True
+
+        return False

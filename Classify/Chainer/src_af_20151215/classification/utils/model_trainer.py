@@ -110,6 +110,7 @@ class ModelTrainer(object):
 
             accum_err.add(err, len(x_batch))
             acc_val = float(acc.data)
+            print ibatch, i, 'acc_val', acc_val, 'loss', err
             accum_acc.add(acc_val, len(x_batch))
 
             if self.verbose > 0 and ibatch % self.verbose == 0 and i > 0:

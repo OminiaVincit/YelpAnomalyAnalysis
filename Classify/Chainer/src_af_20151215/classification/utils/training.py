@@ -65,11 +65,11 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--training', '-t', default=100, type=int,
                         help='training epoch (<=0 value indicates no training)')
-    parser.add_argument('--save-interval', '-s', default=100, type=int,
+    parser.add_argument('--save-interval', '-s', default=50, type=int,
                         help='save the model after every <save_interval> epoch.')
-    parser.add_argument('--plot-interval', '-p', default=100, type=int,
+    parser.add_argument('--plot-interval', '-p', default=50, type=int,
                         help='plot the model after every <plot_interval> epoch.')
-    parser.add_argument('--backup-interval', '-b', default=100, type=int,
+    parser.add_argument('--backup-interval', '-b', default=50, type=int,
                         help='backup the model after every <backup_interval> epoch.')
     parser.add_argument('--verbose', '-v', default=-1, type=int,
                         help='verbose output of training progress on every <verbose> minibatch')
@@ -97,6 +97,8 @@ def main():
                         help='lr decay rate per 10000 sample')
     parser.add_argument('--index', '-idx', default=0, type=int,
                     help='data index')
+    parser.add_argument('--ftype', '-ft', default='TOPICS_64', type=str,
+                    help='features type')
     parser.add_argument('--seed', default=1, type=int,
                     help='seed for random')
     parser.add_argument('--train-down-rate', default=1.0, type=float,
@@ -183,9 +185,12 @@ def main():
 
         # Dataset setting
         sample_creator = task.sample_creator_func()
+        # x_train, y_train, x_test, y_test = \
+        #     sample_creator.load_samples(task.dataset_dir, args.site, args.index, 
+        #                                 args.train_down_rate, args.test_down_rate)
+
         x_train, y_train, x_test, y_test = \
-            sample_creator.load_samples(task.dataset_dir, args.site, args.index, 
-                                        args.train_down_rate, args.test_down_rate)
+            sample_creator.load_samples(task.dataset_dir, args.site, args.ftype, args.index)
 
         print 'x_train', x_train.shape, x_train.nbytes/1024/1024, 'Mbytes ', 'y_train', y_train.shape, y_train.nbytes/1024, 'Kbs'
         print 'x_test',  x_test.shape,  x_test.nbytes/1024/1024,  'Mbytes ', 'y_test',  y_test.shape,  y_test.nbytes/1024,  'Kbs'

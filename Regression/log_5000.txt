@@ -1,0 +1,3 @@
+yelp STR
+(39250, 16)
+x_train (31400, 13) y_train (31400,) x_test (7850, 13) y_test (7850,)
